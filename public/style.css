@@ -1,0 +1,160 @@
+/* - - - Global styles - - - */
+body{
+    background: #D8E0E8;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    outline: none;
+    border: none;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* - - - Sidebar styles  - - - */
+#sidebar{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    left: 0;
+    background: #fff;
+    width: 280px;
+    overflow: hidden;
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+}
+
+#sidebar .d-flex{
+    position: relative;
+    color: #2A2B2C;
+    font-size: 14px;
+    display: table;
+    width: 280px;
+    padding: 15px;
+    text-decoration: none;
+}
+
+#sidebar li{
+    list-style: none;
+}
+
+#sidebar ul{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.side-nav-items, .side-nav-item {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 20px;
+}
+
+#sidebar .item span{
+    padding-left: 20px;
+}
+
+/* - - - Mainbar styles - - - */
+#main-bar{
+    position: absolute;
+    height: 75px;
+    right: 0;
+    left: 280px;
+    overflow: hidden;
+    background: #fff;
+}
+
+#main-bar .d-flex{
+    position: relative;
+    color: #2A2B2C;
+    font-size: 14px;
+    width: 100%;
+    height: 100%;
+    padding: 15px;
+    text-decoration: none;
+}
+
+#main-bar li{
+    display: inline-block;
+    float: right;
+    height: 75px;
+}
+
+#main-bar ul{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#main-bar a {
+    height: 75px;
+}
+
+#main-bar li.signin {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 30px;
+    margin-left: 30px;
+}
+
+li#input{
+    display: flex;
+    align-items: center;
+    margin-right: 30px;
+}
+
+#main-bar li.signin button {
+    display: inline-block;
+    width: 150px;
+    font-weight: bold;
+}
+
+#main-bar .fa-user{
+    margin-right: 10px;
+}
+
+.main-nav-item {
+    margin-left: 15px;
+}
+
+#main-bar button.inputIcon {
+    position: absolute;
+    right: 0;
+    width: 80px;
+    cursor: pointer;
+    background: transparent;
+}
+
+
+/* svg -- size */
+svg {
+    width: 17px;
+    display: block;
+}
+
+/* - - - Navbar styles - - - */
+
+.logo{
+    display: flex;
+}
+
+.logo img{
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+}
+
+.logo span{
+    font-weight: bold;
+    padding-left: 15px;
+    font-size: 18px;
+    text-transform: uppercase;
+    color: #2196f3;
+}
+
+a:hover{
+    color: #1D1E1E;
+}
+
