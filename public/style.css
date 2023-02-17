@@ -1,0 +1,49 @@
+.modal-content {
+    width: 80%;
+    margin: 0 auto;
+}
+.modal-body {
+    padding: 0;
+}
+.btn-close {
+    position: absolute;
+    right: 0;
+    padding: 1em;
+}
+h1 {
+    font-size: 2em;
+    font-weight: bold;
+}
+.myform {
+    padding: 2em;
+    max-width: 100%;
+    box-shadow: 0 4px 6px 0 rgba(22, 22, 26, 0.18);
+}
+@media (max-width: 576px) {
+    .myform {
+        max-width: 90%;
+        margin: 0 auto;
+    }
+}
+.form-control:focus {
+    box-shadow: inset -1px -1px 0 #7e7e7e;
+}
+.form-control {
+    background-color: inherit;
+    padding-left: 5px;
+    border-bottom: 1px solid #fff;
+}
+.myform .btn {
+    width: 100%;
+    font-weight: 500;
+    background-color: #2196f3;
+    border-radius: 1;
+    padding: 0.5em 0;
+    color: #fff;
+}
+
+.myform .btn:hover {
+    background-color: #4aa5ed;
+    border-color: #fff;
+}
+
