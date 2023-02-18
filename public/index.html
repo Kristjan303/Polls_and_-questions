@@ -21,64 +21,71 @@
 </head>
 <body>
 
-<!-- Sign in button -->
-<button type="button" class="btn btn-primary shadow-none" data-bs-toggle="modal" data-bs-target="#ModalForm" >
-    Sign in
-</button>
-<!-- Sign in Modal -->
-<div class="modal fade" id="ModalForm" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true" data-bs-keyboard="false" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body">
-                <button type="button" class="btn-close btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
-                <div class="myform bg-light">
-                    <h1 class="text-center">Sign in</h1>
-                    <form>
-                        <div class="mb-3 mt-4">
-                            <label for="loginemailInput" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="loginemailInput">
-                        </div>
-                        <div class="mb-3">
-                            <label for="loginpasswordInput" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="loginpasswordInput">
-                        </div>
-                        <button type="submit" class="btn btn-light mt-3">Continue</button>
-                        <hr>
-                        <p>Not a member?<a href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#registerModal"> Create account</a></p>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Register Modal -->
-<div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-keyboard="false" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body">
-                <button type="button" class="btn-close btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
-                <div class="myform bg-light">
-                    <h1 class="text-center">Create new account</h1>
-                    <form>
-                        <div class="mb-3 mt-4">
-                            <label for="regemailInput" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="regemailInput">
-                        </div>
-                        <div class="mb-3">
-                            <label for="regpasswordInput" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="regpasswordInput">
-                        </div>
-                        <button type="submit" class="btn btn-light mt-3">Continue</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
+
+
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
-<div id="app">{{ message }}</div>
+<div id="app">
+    <!-- Sign in button -->
+    <button type="button" class="btn btn-primary shadow-none" data-bs-toggle="modal" data-bs-target="#loginModal" id="login">
+        Sign in
+    </button>
+
+    <!-- Sign in Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true" data-bs-keyboard="false" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="myform bg-light">
+                        <h1 class="text-center">Sign in</h1>
+                        <form>
+                            <div class="mb-3 mt-4">
+                                <label for="loginemailInput" class="form-label">Username</label>
+                                <input type="username" class="form-control" v-model="loginModal.username">
+                            </div>
+                            <div class="mb-3">
+                                <label for="loginpasswordInput" class="form-label">Password</label>
+                                <input type="password" class="form-control" v-model="loginModal.password">
+                            </div>
+                            <button @click="login()"  type="submit" class="btn btn-light mt-3">Continue</button>
+                            <hr>
+                            <p>Not a member?<a href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#registerModal"> Create account</a></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<p id="si-error-msg"></p>
+
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-keyboard="false" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="myform bg-light">
+                        <h1 class="text-center">Create new account</h1>
+                        <form>
+                            <div class="mb-3 mt-4">
+                                <label for="regemailInput" class="form-label">Username</label>
+                                <input type="username" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label for="regpasswordInput" class="form-label">Password</label>
+                                <input type="password" class="form-control">
+                            </div>
+                            <button type="submit" class="btn btn-light mt-3">Continue</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     const { createApp } = Vue
@@ -86,72 +93,45 @@
     createApp({
         data() {
             return {
-                message: "Hello Vue!",
-                modalHandler: null,
-                email: null,
-                password: null,
-                sessionId: null
+                loginModal: {},
+                loginError: ""
                 }
             },
         methods: {
-            register: async function () {
-                let response = await this.send('POST', `/users`, {
-                    email: this.email,
-                    password: this.password
-                });
-                if (response.ok) {
-                    this.sessionId = response.body.sessionId;
-                    localStorage.setItem("sessionId", this.sessionId);
-                    this.modalHandler.hide()
-                    alert("The registration was a success!");
-                }
-            },
-            send: function (method, url, body) {
-                const vue = this;
+            login: async function(){
+                this.username = this.loginModal.username,
+                    this.password = this.loginModal.password
+                const loginRequest = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        username: this.username,
+                        password: this.password
+                    })
 
-                async function CheckError(response) {
-                    if (response.status >= 200 && response.status <= 299) {
-                        let responseText = await response.text()
-                        return {ok: true, status: response.status, body: tryToParseJSON(responseText)}
-                    } else {
-                        let responseText = await response.text()
-                        let responseObject = tryToParseJSON(responseText)
-                        if (typeof responseObject === 'object' && typeof responseObject.error === 'string') {
-                            if (response.status === 401 && responseObject.error === "Invalid token") {
-                                vue.clearStorageAndToggleLoginButtons();
-                            } else if (response.status === 401 && responseObject.error === "You have to login") {
-                                vue.clearStorageAndToggleLoginButtons();
-                            }
-                            alert('Error code ' + response.status + ":\n" + responseObject.error)
-                        } else {
-                            alert('Error code ' + response.status + ":\n" + responseText)
-                        }
-                        return {ok: false, status: response.status, body: responseObject || responseText}
-                    }
-                }
-
-                const headers = {
-                    'Content-Type': 'application/json'
                 };
-                if (this.sessionId) {
-                    headers.Authorization = "Bearer " + this.sessionId;
-                }
-                return fetch(url, {
-                    method: method,
-                    headers,
-                    body: JSON.stringify(body)
-                })
-                    .then(CheckError)
-                    .then((jsonResponse) => {
-                        return jsonResponse
-                    }).catch((error) => {
-                        throw Error('Network error: ' + error);
-                    });
+                await fetch("http://localhost:3000/sessions", loginRequest)
+                    .then(response => response.json())
+                    .then(data => {
+                        let signInMsg = document.getElementById("si-error-msg")
+                        if (data.error){
+                            signInMsg.textContent = (data.error)
+                        } else {
+                            console.log(data)
+                            localStorage.setItem('sessionId', data.sessionId)
+                            localStorage.setItem('isAdmin', data.isAdmin)
+                            localStorage.setItem('username', this.username)
+                            document.getElementById("login").style.display = "none"
+                        }
+                    })
             }
         }
     }).mount('#app')
 </script>
 
+<script src="checkLogin.js"></script>
 <!-- Optional JavaScript; choose one of the two! -->
 
 <!-- Option 1: Bootstrap Bundle with Popper -->
