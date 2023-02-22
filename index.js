@@ -28,63 +28,62 @@ var con = mysql.createConnection({
 
 con.connect(function (err){
     if (err) throw err
-    console.log("Connected to joga_mysql db");
+    console.log("Connected to forum db");
 })
 
 
-const users = [{username: "admin", password: "admin", isAdmin: true},
-    {username: "user", password: "password", isAdmin: false}]
-
 const sessions = []
 
-
-app.post('/sessions', (req,res) => {
-    con.query("SELECT * FROM forum.accounts", (err, res) => {
-        if (err) throw err;
-        const row = res[0];
-        const username = row.username;
-        console.log(username)
-        console.log(req.body.username)
-    })
-    if (!req.body.username || !req.body.password){
-        return res.status(400).send({error: "One or more parameters missing"})
+app.post('/sessions', (req, res) => {
+    // Check if the request body contains both username and password
+    if (!req.body.username || !req.body.password) {
+        // If not, send an error response with status code 400
+        return res.status(400).send({ error: "One or more parameters missing" })
     } else {
-        userMatched = 0
-        checkAdmin = false
-        users.forEach((element) => {
-            if(element.username == req.body.username && element.password == req.body.password){
-                userMatched += 1
-                if (element.isAdmin == true){
-                    checkAdmin = true
-                }
-                sessionId = Math.round(Math.random() * 100000000)
-                session = {id: sessionId, user: req.body.username}
+        // If both username and password are present, query the database to find a matching user
+        con.query('SELECT * FROM forum.accounts WHERE username = ? AND password = ?', [req.body.username, req.body.password], function (error, results, fields) {
+            if (error) throw error;
+
+            // Check if the query returned any results
+            if (results.length > 0) {
+                // If so, create a new session with a random session ID
+                const sessionId = Math.round(Math.random() * 100000000)
+                const session = { id: sessionId, user: req.body.username }
                 sessions.push(session)
+
+                // Send a success response with status code 201, indicating that the user is logged in
+                return res.status(201).send({ success: true, loggedIn: true, sessionId: sessionId })
+            } else {
+                // If the query did not return any results, send an error response with status code 401, indicating that the login credentials are invalid
+                return res.status(401).send({ error: "Invalid username or password" })
             }
         });
-        if (userMatched == 0){
-            return res.status(401).send({error: "Invalid username or password"})
-        }
-        else if (userMatched == 1){
-            return res.status(201).send({success: true, isAdmin: checkAdmin, sessionId: sessionId})
-        }
     }
 });
 
+
+// This endpoint is for logging out a user. It expects a POST request with a JSON body containing the username and sessionId.
 app.post('/logout', (req, res) => {
+    // Check if the required parameters are present in the request body.
     if (!req.body.username || !req.body.sessionId){
+        // If any parameter is missing, return a 400 Bad Request response with an error message.
         return res.status(400).send({error: "One or more parameters missing"})
     } else {
+        // If all required parameters are present, iterate over the sessions array to find a matching session.
         sessions.forEach((element) => {
             if (element.user == req.body.username || element.id == req.body.sessionId) {
+                // If a matching session is found, remove it from the sessions array and return a 201 Created response with a success message.
                 sessions.splice(element)
                 return res.status(201).send({success: true})
             } else {
+                // If no matching session is found, return a 401 Unauthorized response with an error message.
                 return res.status(401).send({error: "Invalid sessionId or username"})
             }
         })
     }
 });
+
+
 // General error handler
 app.use((err, req, res, next) => {
     console.error(err.stack);
