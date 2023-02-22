@@ -21,16 +21,17 @@
 </head>
 <body>
 
-
-
-
-
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
 <div id="app">
     <!-- Sign in button -->
-    <button type="button" class="btn btn-primary shadow-none" data-bs-toggle="modal" data-bs-target="#loginModal" id="login">
+    <button type="button" class="btn btn-primary shadow-none" data-bs-toggle="modal" data-bs-target="#loginModal" id="loginBtn">
         Sign in
+    </button>
+
+    <!-- Log out button -->
+    <button @click="logout()" type="button" class="btn btn-primary shadow-none" id="logoutBtn" style="display: none">
+        Log out
     </button>
 
     <!-- Sign in Modal -->
@@ -38,47 +39,48 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body">
-                    <button type="button" class="btn-close btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close" onclick="clearInputs()" ></button>
                     <div class="myform bg-light">
                         <h1 class="text-center">Sign in</h1>
                         <form>
                             <div class="mb-3 mt-4">
-                                <label for="loginemailInput" class="form-label">Username</label>
+                                <label class="form-label">Username</label>
                                 <input type="username" class="form-control" v-model="loginModal.username">
                             </div>
                             <div class="mb-3">
-                                <label for="loginpasswordInput" class="form-label">Password</label>
+                                <label class="form-label">Password</label>
                                 <input type="password" class="form-control" v-model="loginModal.password">
                             </div>
-                            <button @click="login()"  type="submit" class="btn btn-light mt-3">Continue</button>
+                            <p id="s-error-msg" class="text-center"></p>
+                            <button @click="login()"  type="submit" class="btn btn-light mt-3" onclick="clearInputs()">Continue</button>
                             <hr>
-                            <p>Not a member?<a href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#registerModal"> Create account</a></p>
+                            <p id="regMsg">Not a member?<a href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#registerModal" onclick="clearInputs()"> Create account</a></p>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-<p id="si-error-msg"></p>
+
 
     <!-- Register Modal -->
     <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-keyboard="false" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body">
-                    <button type="button" class="btn-close btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close" onclick="clearInputs()"></button>
                     <div class="myform bg-light">
                         <h1 class="text-center">Create new account</h1>
                         <form>
                             <div class="mb-3 mt-4">
-                                <label for="regemailInput" class="form-label">Username</label>
-                                <input type="username" class="form-control">
+                                <label class="form-label">Username</label>
+                                <input type="username" class="form-control" v-model="loginModal.username">
                             </div>
                             <div class="mb-3">
-                                <label for="regpasswordInput" class="form-label">Password</label>
-                                <input type="password" class="form-control">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control" v-model="loginModal.password">
                             </div>
-                            <button type="submit" class="btn btn-light mt-3">Continue</button>
+                            <button type="submit" class="btn btn-light mt-3" onclick="clearInputs()">Create account</button>
                         </form>
                     </div>
                 </div>
@@ -93,8 +95,7 @@
     createApp({
         data() {
             return {
-                loginModal: {},
-                loginError: ""
+                loginModal: {}
                 }
             },
         methods: {
@@ -115,15 +116,41 @@
                 await fetch("http://localhost:3000/sessions", loginRequest)
                     .then(response => response.json())
                     .then(data => {
-                        let signInMsg = document.getElementById("si-error-msg")
+                        let signInMsg = document.getElementById("s-error-msg")
+                        const loginModal = $('#loginModal');
                         if (data.error){
                             signInMsg.textContent = (data.error)
                         } else {
-                            console.log(data)
                             localStorage.setItem('sessionId', data.sessionId)
                             localStorage.setItem('isAdmin', data.isAdmin)
                             localStorage.setItem('username', this.username)
-                            document.getElementById("login").style.display = "none"
+                            loginModal.modal('hide');
+                            document.getElementById("loginBtn").style.display = "none"
+                            document.getElementById("logoutBtn").style.display = ""
+                        }
+                    })
+            },
+            logout: async function(){
+                const logoutRequest = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        sessionId: localStorage.getItem('sessionId'),
+                        username: localStorage.getItem('username')
+                    })
+                }
+                await fetch("http://localhost:3000/logout", logoutRequest)
+                    .then(response => response.json())
+                    .then(data => {
+                        const signOutMsg = document.getElementById("s-error-msg")
+                        if (data.error) {
+                            signOutMsg.textContent = (data.error)
+                        } else {
+                            document.getElementById("loginBtn").style.display = ""
+                            document.getElementById("logoutBtn").style.display = "none"
+                            localStorage.clear()
                         }
                     })
             }
@@ -131,6 +158,13 @@
     }).mount('#app')
 </script>
 
+<script>
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(event) {
+        // prevent the default form submission behavior
+        event.preventDefault();
+    });
+</script>
 <script src="checkLogin.js"></script>
 <!-- Optional JavaScript; choose one of the two! -->
 
