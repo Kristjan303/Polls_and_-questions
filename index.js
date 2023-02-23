@@ -80,6 +80,13 @@ app.post('/registration', (req, res) => {
         } else if (results.length > 0) {
             res.status(409).send('Username already exists');
         } else {
+            // Check password requirements
+            const passwordRegex = /^(?=.*\d)(?=.*[a-zA-Z]).{6,16}$/;
+            if (!passwordRegex.test(password)) {
+                res.status(400).send({ error: 'Password must be at least 6-16 characters and contain at least 1 number' });
+                return;
+            }
+
             // Insert new user into accounts table
             const newAccount = { username, password};
             con.query('INSERT INTO forum.accounts SET ?', newAccount, (error, results) => {
@@ -93,6 +100,7 @@ app.post('/registration', (req, res) => {
         }
     });
 });
+
 
 // This endpoint is for logging out a user. It expects a POST request with a JSON body containing the username and sessionId.
 app.post('/logout', (req, res) => {

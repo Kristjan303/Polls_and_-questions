@@ -8,12 +8,16 @@ function checkSession() {
 
 function clearInputs() {
     var inputs = document.getElementsByTagName('input');
-    var errorMessages = document.getElementById('s-error-msg');
+    var sErrorMessages = document.getElementById('s-error-msg');
+    var rErrorMessages = document.getElementById('r-error-msg');
     for (var i = 0; i < inputs.length; i++) {
         inputs[i].value = '';
     }
-    var errorMsg = document.getElementById('s-error-msg');
-    if (errorMsg) {
-        errorMsg.textContent = '';
+    if (sErrorMessages) {
+        console.log(sErrorMessages.textContent);
+        sErrorMessages.innerHTML = '';
+    }
+    if (rErrorMessages) {
+        rErrorMessages.innerHTML = '';
     }
 }
