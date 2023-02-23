@@ -92,7 +92,7 @@
                                 <label class="form-label">Password</label>
                                 <input type="password" class="form-control" v-model="loginModal.password">
                             </div>
-                            <button type="submit" class="btn btn-light mt-3" onclick="clearInputs()">Create account</button>
+                            <button @click="createAccount()" type="submit" class="btn btn-light mt-3" onclick="clearInputs()">Create account</button>
                         </form>
                     </div>
                 </div>
@@ -187,9 +187,43 @@
                             localStorage.clear()
                         }
                     })
+            },
+            createAccount() {
+                // Create a user object with the entered username and password
+                const user = {
+                    username: this.loginModal.username,
+                    password: this.loginModal.password
+                }
+
+                const createAccountRequest = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(user)
+                    };
+                // Send a POST request to the /registration endpoint on the backend
+                fetch('/registration', createAccountRequest)
+                    .then(response => {
+                        // Handle the response based on its HTTP status code
+                        if (response.ok) {
+                            console.log('Account created successfully')
+                            alert('Account created successfully')
+                        } else if (response.status === 409) {
+                            console.error('Username already exists')
+                            alert('Username already exists')
+                        } else {
+                            console.error('Error creating account')
+                            alert('Error creating account')
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error)
+                        alert('Error creating account')
+                    })
             }
         }
-    }).mount('#app')
+   }).mount('#app')
 </script>
 
 <script>

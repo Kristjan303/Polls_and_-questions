@@ -62,6 +62,32 @@ app.post('/sessions', (req, res) => {
 });
 
 
+// Create a new account
+app.post('/registration', (req, res) => {
+    const { username, password } = req.body;
+
+    // Check if username already exists
+    con.query('SELECT * FROM forum.accounts WHERE username = ?', [username], (error, results) => {
+        if (error) {
+            console.error(error);
+            res.status(500).send('Error creating account');
+        } else if (results.length > 0) {
+            res.status(409).send('Username already exists');
+        } else {
+            // Insert new user into accounts table
+            const newAccount = { username, password};
+            con.query('INSERT INTO forum.accounts SET ?', newAccount, (error, results) => {
+                if (error) {
+                    console.error(error);
+                    res.status(500).send('Error creating account');
+                } else {
+                    res.status(201).send('Account created successfully');
+                }
+            });
+        }
+    });
+});
+
 // This endpoint is for logging out a user. It expects a POST request with a JSON body containing the username and sessionId.
 app.post('/logout', (req, res) => {
     // Check if the required parameters are present in the request body.
