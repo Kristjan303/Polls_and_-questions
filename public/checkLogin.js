@@ -14,7 +14,6 @@ function clearInputs() {
         inputs[i].value = '';
     }
     if (sErrorMessages) {
-        console.log(sErrorMessages.textContent);
         sErrorMessages.innerHTML = '';
     }
     if (rErrorMessages) {

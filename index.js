@@ -51,8 +51,8 @@ app.post('/sessions', (req, res) => {
                 const session = { id: sessionId, user: req.body.username }
                 sessions.push(session)
 
-                // Redirect the user to the home page
-                res.redirect('/');
+                // Send a success response with status code 201, indicating that the user is logged in
+                return res.status(201).send({ success: true, loggedIn: true, sessionId: sessionId })
             } else {
                 // If the query did not return any results, send an error response with status code 401, indicating that the login credentials are invalid
                 return res.status(401).send({ error: "Invalid username or password" })
@@ -60,7 +60,6 @@ app.post('/sessions', (req, res) => {
         });
     }
 });
-
 
 
 // Create a new account
