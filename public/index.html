@@ -92,6 +92,8 @@
                                 <label class="form-label">Password</label>
                                 <input type="password" class="form-control" v-model="loginModal.password">
                             </div>
+                            <!-- The error message container -->
+                            <p id="r-error-msg" class="text-center"></p>
                             <button @click="createAccount()" type="submit" class="btn btn-light mt-3" onclick="clearInputs()">Create account</button>
                         </form>
                     </div>
@@ -201,36 +203,41 @@
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify(user)
-                    };
+                };
+
                 // Send a POST request to the /registration endpoint on the backend
                 fetch('/registration', createAccountRequest)
                     .then(response => {
-                        // Handle the response based on its HTTP status code
-                        if (response.ok) {
-                            console.log('Account created successfully')
-                            alert('Account created successfully')
+                        const createAccountMsg = document.getElementById("r-error-msg");
+
+                        if (response.status === 201) {
+                            createAccountMsg.textContent = "Account created successfully";
                         } else if (response.status === 409) {
-                            console.error('Username already exists')
-                            alert('Username already exists')
+                            createAccountMsg.textContent = "Username already exists";
+                        } else if (response.status === 400) {
+                            response.json().then(data => {
+                                createAccountMsg.textContent = data.error;
+                            });
                         } else {
-                            console.error('Error creating account')
-                            alert('Error creating account')
+                            createAccountMsg.textContent = "Error creating account";
                         }
                     })
                     .catch(error => {
-                        console.error(error)
-                        alert('Error creating account')
-                    })
+                        console.error(error);
+                    });
             }
         }
    }).mount('#app')
 </script>
 
 <script>
-    const form = document.querySelector('form');
-    form.addEventListener('submit', function(event) {
-        // prevent the default form submission behavior
-        event.preventDefault();
+    const forms = document.querySelectorAll('form');
+
+    forms.forEach(form => {
+        form.addEventListener('submit', function(event) {
+            // prevent the default form submission behavior
+            event.preventDefault();
+        });
     });
 </script>
 <script src="checkLogin.js"></script>

@@ -66,6 +66,12 @@ app.post('/sessions', (req, res) => {
 app.post('/registration', (req, res) => {
     const { username, password } = req.body;
 
+    // Check if username or password is empty
+    if (!username || !password) {
+        res.status(400).send({ error: 'Both fields need to be filled' });
+        return;
+    }
+
     // Check if username already exists
     con.query('SELECT * FROM forum.accounts WHERE username = ?', [username], (error, results) => {
         if (error) {
@@ -79,9 +85,9 @@ app.post('/registration', (req, res) => {
             con.query('INSERT INTO forum.accounts SET ?', newAccount, (error, results) => {
                 if (error) {
                     console.error(error);
-                    res.status(500).send('Error creating account');
+                    res.status(500).send({error: 'Error creating account'});
                 } else {
-                    res.status(201).send('Account created successfully');
+                    res.status(201).send({error: "Account created successfully"});
                 }
             });
         }
