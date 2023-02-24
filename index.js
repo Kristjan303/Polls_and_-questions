@@ -4,6 +4,7 @@ const swaggerUi = require('swagger-ui-express');
 const yamlJs = require('yamljs');
 const swaggerDocument = yamlJs.load('./swagger.yaml');
 const mysql = require('mysql')
+const bcrypt = require('bcrypt');
 
 require('dotenv').config();
 
@@ -41,18 +42,25 @@ app.post('/sessions', (req, res) => {
         return res.status(400).send({ error: "One or more parameters missing" })
     } else {
         // If both username and password are present, query the database to find a matching user
-        con.query('SELECT * FROM forum.accounts WHERE username = ? AND password = ?', [req.body.username, req.body.password], function (error, results, fields) {
+        con.query('SELECT password FROM forum.accounts WHERE username = ?', [req.body.username], function (error, results, fields) {
             if (error) throw error;
 
             // Check if the query returned any results
             if (results.length > 0) {
-                // If so, create a new session with a random session ID
-                const sessionId = Math.round(Math.random() * 100000000)
-                const session = { id: sessionId, user: req.body.username }
-                sessions.push(session)
+                // If so, compare the hashed password with the plain-text password entered by the user
+                const hashedPassword = results[0].password;
+                if (bcrypt.compareSync(req.body.password, hashedPassword)) {
+                    // If the passwords match, create a new session with a random session ID
+                    const sessionId = Math.round(Math.random() * 100000000)
+                    const session = { id: sessionId, user: req.body.username }
+                    sessions.push(session)
 
-                // Send a success response with status code 201, indicating that the user is logged in
-                return res.status(201).send({ success: true, loggedIn: true, sessionId: sessionId })
+                    // Send a success response with status code 201, indicating that the user is logged in
+                    return res.status(201).send({ success: true, loggedIn: true, sessionId: sessionId })
+                } else {
+                    // If the passwords do not match, send an error response with status code 401, indicating that the login credentials are invalid
+                    return res.status(401).send({ error: "Invalid username or password" })
+                }
             } else {
                 // If the query did not return any results, send an error response with status code 401, indicating that the login credentials are invalid
                 return res.status(401).send({ error: "Invalid username or password" })
@@ -60,6 +68,7 @@ app.post('/sessions', (req, res) => {
         });
     }
 });
+
 
 
 // Create a new account
@@ -87,8 +96,12 @@ app.post('/registration', (req, res) => {
                 return;
             }
 
+            // Hash the password
+            const salt = bcrypt.genSaltSync(10);
+            const hashedPassword = bcrypt.hashSync(password, salt);
+
             // Insert new user into accounts table
-            const newAccount = { username, password};
+            const newAccount = { username, password: hashedPassword };
             con.query('INSERT INTO forum.accounts SET ?', newAccount, (error, results) => {
                 if (error) {
                     console.error(error);
