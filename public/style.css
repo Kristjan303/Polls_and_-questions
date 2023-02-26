@@ -1,42 +1,177 @@
+/* Global styles */
 body{
-    height: 100vh;
+    background: #D8E0E8;
 }
 
+*{
+    margin: 0;
+    padding: 0;
+    outline: none;
+    border: none;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Sidebar styles */
+#sidebar{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    left: 0;
+    background: #fff;
+    width: 280px;
+    overflow: hidden;
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+}
+
+#sidebar .d-flex{
+    position: relative;
+    color: #2A2B2C;
+    font-size: 14px;
+    display: table;
+    width: 280px;
+    padding: 15px;
+    text-decoration: none;
+}
+
+#sidebar li{
+    list-style: none;
+}
+
+#sidebar ul{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Mainbar styles */
+#mainbar{
+    position: absolute;
+    right: 0;
+    left: 280px;
+    overflow: hidden;
+    background: #fff;
+}
+
+#mainbar .d-flex{
+    position: relative;
+    color: #2A2B2C;
+    font-size: 14px;
+    width: 100%;
+    padding: 15px;
+    text-decoration: none;
+}
+
+#mainbar li{
+    display: inline-block;
+    float: right;
+}
+
+#mainbar ul{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Navbar styles */
+.logo{
+    display: flex;
+    transition: all 0.5s ease;
+}
+
+.logo img{
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+}
+
+.logo span{
+    font-weight: bold;
+    padding-left: 15px;
+    font-size: 18px;
+    text-transform: uppercase;
+    color: #2196f3;
+}
+
+
+.item span{
+    padding-left: 20px;
+}
+
+a:hover{
+    color: #1D1E1E;
+}
+
+.fa-solid{
+    position: relative;
+    font-size: 30px;
+    margin-left: 8px;
+}
+
+.nav-items, .nav-item {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+.createNewAcc, .logout{
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 50px;
+    width: 280px;
+    padding: 15px;
+}
+
+#loginBtn, #logoutBtn{
+    width: 100%;
+    border-radius: 20px;
+}
+
+/* Modal styles */
 .modal-content {
     width: 80%;
     margin: 0 auto;
 }
+
 .modal-body {
     padding: 0;
 }
+
 .btn-close {
     position: absolute;
     right: 0;
     padding: 1em;
 }
+
 h1 {
     font-family: 'Roboto', sans-serif;
     font-size: 2em;
     font-weight: bold;
 }
+
 .myform {
     padding: 2em;
     max-width: 100%;
     box-shadow: 0 4px 6px 0 rgba(22, 22, 26, 0.18);
 }
+
 @media (max-width: 576px) {
     .myform {
         max-width: 90%;
         margin: 0 auto;
     }
 }
+
 .form-control:focus {
     box-shadow: none;
 }
+
 .form-control {
     background-color: inherit;
     padding-left: 5px;
 }
+
 .myform .btn {
     font-family: Roboto, sans-serif;
     width: 100%;
