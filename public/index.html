@@ -33,34 +33,30 @@
     <div>
         <nav id="sidebar">
             <ul>
-                    <li>
-                        <a href="#" class="logo d-flex align-items-center" >
-                            <img src="/images/important.png" alt="">
-                            <span class="nav-items">Budget Reddit</span>
-                        </a>
-                    </li>
-                        <li><a href="#" class="d-flex align-items-center item">
-                            <i class="fa-solid fa-home"></i>
-                            <span class="nav-item">Home</span>
-                        </a></li>
-                    <li><a href="#" class="d-flex align-items-center item">
-                        <i class="fa-solid fa-gear"></i>
-                        <span class="nav-item">Settings</span>
-                    </a></li>
-                    <li><a href="#" class="d-flex align-items-center item">
-                        <i class="fa-solid fa-phone"></i>
-                        <span class="nav-item">Contact</span>
-                    </a></li>
-                    <li class="createNewAcc">
-                        <!-- Create account button -->
-                        <button type="button" class="btn btn-primary shadow-none" data-bs-toggle="modal" data-bs-target="#registerModal"
-                                id="loginBtn">Join Budget Reddit</button>
-                    </li>
-                    <li class="logout">
-                        <!-- Log out button -->
-                        <button @click="logout()" type="button" class="btn btn-primary shadow-none" id="logoutBtn" style="display: none">
-                            Log out</button>
-                    </li>
+                <li>
+                    <a href="#" class="logo d-flex align-items-center" >
+                        <img src="/images/important.png" alt="">
+                        <span class="side-nav-items">Budget Reddit</span>
+                    </a>
+                </li>
+                <li><a href="#" class="d-flex align-items-center item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span class="side-nav-item">Settings</span>
+                </a></li>
+                <li><a href="#" class="d-flex align-items-center item">
+                    <i class="fa-solid fa-phone"></i>
+                    <span class="side-nav-item">Contact</span>
+                </a></li>
+                <li class="createNewAcc">
+                    <!-- Create account button -->
+                    <button type="button" class="btn btn-primary shadow-none" data-bs-toggle="modal" data-bs-target="#registerModal" id="loginBtn">Join Budget Reddit</button>
+                </li>
+                <li class="logout">
+                    <!-- Log out button -->
+                    <button @click="logout()" type="button" class="btn btn-primary shadow-none" id="logoutBtn" style="display: none">
+                        Log out
+                    </button>
+                </li>
             </ul>
         </nav>
     </div>
@@ -69,25 +65,27 @@
             <ul>
                 <li class="signin">
                     <!-- Sign in button -->
-                    <button type="button" class="btn btn-primary shadow-none" data-bs-toggle="modal" data-bs-target="#loginModal"
-                            id="loginBtn">Sign in</button>
+                    <button type="button" class="btn btn-primary shadow-none" data-bs-toggle="modal" data-bs-target="#loginModal" id="mainLoginBtn">Sign in</button>
                 </li>
                 <li><a href="#" class="d-flex align-items-center item">
                     <i class="fa-solid fa-user"></i>
-                    <span class="nav-item">Profile</span>
+                    <span class="main-nav-item">Profile</span>
                 </a></li>
                 <li><a href="#" class="d-flex align-items-center item">
                     <i class="fa-solid fa-plus"></i>
-                    <span class="nav-item">Create</span>
+                    <span class="main-nav-item">Create</span>
                 </a></li>
-                <li><a href="#" class="d-flex align-items-center item">
-                    <i class="fa-solid fa-search"></i>
-                    <span class="nav-item">Search</span>
-                </a></li>
+                <!-- Search bar -->
+                <li>
+                    <form class="d-flex align-items-center item">
+                        <input type="text" placeholder="Search" class="form-control">
+                    </form>
+                </li>
             </ul>
         </nav>
-
     </div>
+
+
 
     <!-- Sign in Modal -->
     <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true"
@@ -305,6 +303,12 @@
             // prevent the default form submission behavior
             event.preventDefault();
         });
+    });
+
+    // add event listener to refresh button
+    document.getElementById("logoutBtn").addEventListener("click", function() {
+        // reload the current page
+        location.reload();
     });
 </script>
 <script src="checkLogin.js"></script>
