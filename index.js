@@ -3,7 +3,7 @@ const app = express();
 const swaggerUi = require('swagger-ui-express');
 const yamlJs = require('yamljs');
 const swaggerDocument = yamlJs.load('./swagger.yaml');
-const mysql = require('mysql')
+const mysql = require('mysql2')
 const bcrypt = require('bcrypt');
 
 require('dotenv').config();
@@ -23,13 +23,14 @@ app.use(express.json());
 var con = mysql.createConnection({
     host: "localhost",
     user: "root",
+    port: 3307,
     password: "qwerty",
-    database: "forum"
+    database: "polls"
 })
 
 con.connect(function (err){
     if (err) throw err
-    console.log("Connected to forum db");
+    console.log("Connected polls db");
 })
 
 
@@ -42,7 +43,7 @@ app.post('/sessions', (req, res) => {
         return res.status(400).send({ error: "One or more parameters missing" })
     } else {
         // If both username and password are present, query the database to find a matching user
-        con.query('SELECT password FROM forum.accounts WHERE username = ?', [req.body.username], function (error, results, fields) {
+        con.query('SELECT password FROM polls.accounts WHERE username = ?', [req.body.username], function (error, results, fields) {
             if (error) throw error;
 
             // Check if the query returned any results
@@ -82,7 +83,7 @@ app.post('/registration', (req, res) => {
     }
 
     // Check if username already exists
-    con.query('SELECT * FROM forum.accounts WHERE username = ?', [username], (error, results) => {
+    con.query('SELECT * FROM polls.accounts WHERE username = ?', [username], (error, results) => {
         if (error) {
             console.error(error);
             res.status(500).send('Error creating account');
@@ -102,7 +103,7 @@ app.post('/registration', (req, res) => {
 
             // Insert new user into accounts table
             const newAccount = { username, password: hashedPassword };
-            con.query('INSERT INTO forum.accounts SET ?', newAccount, (error, results) => {
+            con.query('INSERT INTO polls.accounts SET ?', newAccount, (error, results) => {
                 if (error) {
                     console.error(error);
                     res.status(500).send({error: 'Error creating account'});
