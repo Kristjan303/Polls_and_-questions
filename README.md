@@ -11,7 +11,7 @@
 
 - Create a database called ```polls``` with accounts table inside it: 
 ```sh
-mysql -u root -e "create database polls; use polls; CREATE TABLE accounts (  id INT AUTO_INCREMENT PRIMARY KEY,  username VARCHAR(255) NOT NULL,  password VARCHAR(255) NOT NULL);
+mysql -u root -e "create database polls; use polls; CREATE TABLE accounts (  id INT AUTO_INCREMENT PRIMARY KEY,  username VARCHAR(255) NOT NULL,  password VARCHAR(255) NOT NULL);"
 ```
 
 ## Running the app
