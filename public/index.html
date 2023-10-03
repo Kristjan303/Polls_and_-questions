@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
 
 
-    <title>Forum</title>
+    <title>Chatty Patty</title>
 </head>
 <body>
 
@@ -33,23 +33,34 @@
     <div>
         <nav id="sidebar">
             <ul>
-                <li>
+                <li class="main-btn">
                     <a href="#" class="logo d-flex align-items-center" >
                         <img src="/images/important.png" alt="">
-                        <span class="side-nav-items">Forum</span>
+                        <span class="side-nav-items">Chatty Patty</span>
                     </a>
                 </li>
+                <li><a href="#" class="d-flex align-items-center item">
+                    <i class="fa-solid fa-user"></i>
+                    <span class="side-nav-item">Profile</span></a></li>
                 <li><a href="#" class="d-flex align-items-center item">
                     <i class="fa-solid fa-gear"></i>
                     <span class="side-nav-item">Settings</span>
                 </a></li>
+
                 <li><a href="#" class="d-flex align-items-center item">
                     <i class="fa-solid fa-phone"></i>
                     <span class="side-nav-item">Contact</span>
                 </a></li>
+
+                <li class="signin">
+                    <!-- Sign in button -->
+                    <button type="button"  data-bs-toggle="modal" data-bs-target="#loginModal" id="mainLoginBtn">Sign in</button>
+                </li>
+
+
                 <li class="createNewAcc">
                     <!-- Create account button -->
-                    <button type="button" class="btn btn-primary shadow-none" data-bs-toggle="modal" data-bs-target="#registerModal" id="loginBtn">Join Budget Reddit</button>
+                    <button type="button" class="btn btn-primary shadow-none" data-bs-toggle="modal" data-bs-target="#registerModal" id="loginBtn">Join Chatty Patty</button>
                 </li>
                 <li class="logout">
                     <!-- Log out button -->
@@ -63,14 +74,6 @@
     <div>
         <nav id="mainbar">
             <ul>
-                <li class="signin">
-                    <!-- Sign in button -->
-                    <button type="button"  data-bs-toggle="modal" data-bs-target="#loginModal" id="mainLoginBtn">Sign in</button>
-                </li>
-                <li><a href="#" class="d-flex align-items-center item">
-                    <i class="fa-solid fa-user"></i>
-                    <span class="main-nav-item">Profile</span>
-                </a></li>
                 <li><a href="#" class="d-flex align-items-center item">
                     <i class="fa-solid fa-plus"></i>
                     <span class="main-nav-item">Create</span>

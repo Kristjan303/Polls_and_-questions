@@ -48,15 +48,21 @@ body{
 .side-nav-items, .side-nav-item {
     display: inline-block;
     vertical-align: middle;
-    margin-left: 20px;
+    margin-left: 1px;
 }
 
 #sidebar .item span{
     padding-left: 20px;
 }
 
+.main-btn {
+    margin-bottom: 20px;
+}
+
 /* - - - Mainbar styles - - - */
 #mainbar{
+    display: grid;
+    justify-content: center;
     position: absolute;
     height: 75px;
     right: 0;
@@ -91,18 +97,20 @@ body{
     height: 75px;
 }
 
-#mainbar li.signin {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-right: 30px;
-    margin-left: 30px;
+li.signin {
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 120px;
+    width: 280px;
+    padding: 15px;
 }
 
-li#input{
+
+li#input {
     display: flex;
     align-items: center;
-    margin-right: 30px;
+    justify-content: center;
+    text-align: center;
 }
 
 #mainbar li.signin button {
@@ -143,6 +151,13 @@ li#input{
     border: 2px solid var(--color);
     border-radius: 6px;
     position: relative;
+}
+
+.or {
+    text-align: center;
+    padding-top: 10px;
+    margin-bottom: 0px;
+
 }
 
 #mainLoginBtn::before {
@@ -188,6 +203,7 @@ li#input{
     width: var(--width-of-input);
     position: relative;
     isolation: isolate;
+    justify-content: center;
 }
 /* a fancy bg for showing background and border when focus. */
 .fancy-bg {
@@ -303,9 +319,9 @@ a:hover{
 .createNewAcc, .logout{
     position: absolute;
     bottom: 0;
-    margin-bottom: 50px;
     width: 280px;
     padding: 15px;
+    margin-bottom: 69px;
 }
 
 #loginBtn, #logoutBtn, #mainLoginBtn{
