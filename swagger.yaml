@@ -1,0 +1,54 @@
+openapi: 3.0.2
+info:
+  title: ITA21
+  version: 1.0.0
+  description: Demonstration API
+  /registration:
+     post:
+       summary: Create a new account
+       description: Create a new user account.
+       produces:
+         - application/json
+       parameters:
+         - name: username
+           description: User's username.
+           in: body
+           required: true
+           type: string
+         - name: password
+           description: User's password.
+           in: body
+           required: true
+           type: string
+       responses:
+         201:
+           description: Account created successfully.
+         400:
+           description: Bad request.
+         409:
+           description: Username already exists.
+
+  /logout:
+      post:
+       summary: Logout a user
+       description: Logout a user by invalidating their session.
+       produces:
+         - application/json
+       parameters:
+         - name: username
+           description: User's username.
+           in: body
+           required: true
+           type: string
+         - name: sessionId
+           description: User's session ID.
+           in: body
+           required: true
+           type: string
+       responses:
+         201:
+           description: Logout successful.
+         400:
+           description: Bad request.
+         401:
+           description: Invalid session or username.

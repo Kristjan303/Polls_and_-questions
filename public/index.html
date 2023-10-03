@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Jquery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+
+    <!-- Font awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
+
+
+    <title>Forum</title>
+</head>
+<body>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+<div id="app">
+
+    <div>
+        <nav id="sidebar">
+            <ul>
+                <li>
+                    <a href="#" class="logo d-flex align-items-center" >
+                        <img src="/images/important.png" alt="">
+                        <span class="side-nav-items">Forum</span>
+                    </a>
+                </li>
+                <li><a href="#" class="d-flex align-items-center item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span class="side-nav-item">Settings</span>
+                </a></li>
+                <li><a href="#" class="d-flex align-items-center item">
+                    <i class="fa-solid fa-phone"></i>
+                    <span class="side-nav-item">Contact</span>
+                </a></li>
+                <li class="createNewAcc">
+                    <!-- Create account button -->
+                    <button type="button" class="btn btn-primary shadow-none" data-bs-toggle="modal" data-bs-target="#registerModal" id="loginBtn">Join Budget Reddit</button>
+                </li>
+                <li class="logout">
+                    <!-- Log out button -->
+                    <button @click="logout()" type="button" class="btn btn-primary shadow-none" id="logoutBtn" style="display: none">
+                        Log out
+                    </button>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <div>
+        <nav id="mainbar">
+            <ul>
+                <li class="signin">
+                    <!-- Sign in button -->
+                    <button type="button"  data-bs-toggle="modal" data-bs-target="#loginModal" id="mainLoginBtn">Sign in</button>
+                </li>
+                <li><a href="#" class="d-flex align-items-center item">
+                    <i class="fa-solid fa-user"></i>
+                    <span class="main-nav-item">Profile</span>
+                </a></li>
+                <li><a href="#" class="d-flex align-items-center item">
+                    <i class="fa-solid fa-plus"></i>
+                    <span class="main-nav-item">Create</span>
+                </a></li>
+                <!-- TODO: Adjust search bar placement based on main content position -->
+                <li id="input">
+                    <form class="form">
+                        <label for="search">
+                            <input class="input" type="text" required="" placeholder="Search..." id="search">
+                            <div class="fancy-bg"></div>
+                            <div class="search">
+                                <svg viewBox="0 0 24 24" aria-hidden="true" class="r-14j79pv r-4qtqp9 r-yyyyoo r-1xvli5t r-dnmrzs r-4wgw6l r-f727ji r-bnwqim r-1plcrui r-lrvibr">
+                                    <g>
+                                        <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+                                    </g>
+                                </svg>
+                            </div>
+                            <button class="close-btn" type="reset">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </label>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+
+
+    <!-- Sign in Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true"
+         data-bs-keyboard="false" data-bs-backdrop="static">
+        <!-- The modal dialog container -->
+        <div class="modal-dialog modal-dialog-centered">
+            <!-- The modal content container -->
+            <div class="modal-content">
+                <!-- The modal body container -->
+                <div class="modal-body">
+                    <!-- The close button for the modal -->
+                    <button type="button" class="btn-close btn-close shadow-none" data-bs-dismiss="modal"
+                            aria-label="Close" onclick="clearInputs()"></button>
+                    <!-- The form container for the login modal -->
+                    <div class="myform bg-light">
+                        <!-- The login title -->
+                        <h1 class="text-center">Sign in</h1>
+                        <form>
+                            <!-- The username input field -->
+                            <div class="mb-3 mt-4">
+                                <label class="form-label">Username</label>
+                                <input type="username" class="form-control" v-model="loginModal.username">
+                            </div>
+                            <!-- The password input field -->
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control" v-model="loginModal.password">
+                            </div>
+                            <!-- The error message container -->
+                            <p id="s-error-msg" class="text-center"></p>
+                            <!-- The login button -->
+                            <button @click="login()" type="submit" class="btn btn-light mt-3" onclick="clearInputs()">
+                                Continue
+                            </button>
+                            <hr>
+                            <!-- The link to the registration modal -->
+                            <p id="regMsg">Not a member?<a href="#" data-bs-dismiss="modal" data-bs-toggle="modal"
+                                                           data-bs-target="#registerModal" onclick="clearInputs()">
+                                Create account</a></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+         data-bs-keyboard="false" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close btn-close shadow-none" data-bs-dismiss="modal"
+                            aria-label="Close" onclick="clearInputs()"></button>
+                    <div class="myform bg-light">
+                        <h1 class="text-center">Create new account</h1>
+                        <form>
+                            <div class="mb-3 mt-4">
+                                <label class="form-label">Username</label>
+                                <input type="username" class="form-control" v-model="loginModal.username">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control" v-model="loginModal.password">
+                            </div>
+                            <!-- The error message container -->
+                            <p id="r-error-msg" class="text-center"></p>
+                            <button @click="createAccount()" type="submit" class="btn btn-light mt-3"
+                                    onclick="clearInputs()">Create account
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const {createApp} = Vue
+
+    createApp({
+        data() {
+            return {
+                loginModal: {}
+            }
+        },
+        methods: {
+            login: async function () {
+                // Get the username and password from the login form
+                this.username = this.loginModal.username,
+                    this.password = this.loginModal.password
+
+                // Construct a request object to send to the server
+                const loginRequest = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        username: this.username,
+                        password: this.password
+                    })
+                };
+
+                // Send the login request to the server using fetch
+                await fetch("http://localhost:3000/sessions", loginRequest)
+                    .then(response => response.json()) // Parse the response JSON
+                    .then(data => {
+                        // Get a reference to the sign-in error message element
+                        let signInMsg = document.getElementById("s-error-msg")
+
+                        // Get a reference to the login modal
+                        const loginModal = $('#loginModal');
+
+                        // If the server returned an error message, display it
+                        if (data.error) {
+                            signInMsg.textContent = (data.error)
+                        } else {
+                            // If the login was successful, store the session ID,
+                            // the fact that the user is logged in, and the username
+                            // in local storage
+                            localStorage.setItem('sessionId', data.sessionId)
+                            localStorage.setItem('loggedIn', data.loggedIn)
+                            localStorage.setItem('username', this.username)
+
+                            // Hide the login modal
+                            loginModal.modal('hide');
+
+                            // Show the logout button and hide the login button
+                            document.getElementById("loginBtn").style.display = "none"
+                            document.getElementById("logoutBtn").style.display = ""
+
+                            // Redirect to home page
+                            window.location.href = "/";
+                        }
+                    })
+            },
+            logout: async function () {
+                // Create a logout request with the sessionId and username stored in localStorage
+                const logoutRequest = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        sessionId: localStorage.getItem('sessionId'),
+                        username: localStorage.getItem('username')
+                    })
+                }
+                // Send the logout request to the server
+                await fetch("http://localhost:3000/logout", logoutRequest)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Get the sign-out message element
+                        const signOutMsg = document.getElementById("s-error-msg")
+                        // If there was an error in the logout response, display it in the sign-out message element
+                        if (data.error) {
+                            signOutMsg.textContent = (data.error)
+                        } else {
+                            // If there was no error, hide the logout button and show the login button
+                            document.getElementById("loginBtn").style.display = ""
+                            document.getElementById("logoutBtn").style.display = "none"
+                            // Clear the localStorage
+                            localStorage.clear()
+                        }
+                    })
+            },
+            createAccount() {
+                // Create a user object with the entered username and password
+                const user = {
+                    username: this.loginModal.username,
+                    password: this.loginModal.password
+                }
+
+                const createAccountRequest = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(user)
+                };
+
+                // Send a POST request to the /registration endpoint on the backend
+                fetch('/registration', createAccountRequest)
+                    .then(response => {
+                        const createAccountMsg = document.getElementById("r-error-msg");
+
+                        if (response.status === 201) {
+                            createAccountMsg.textContent = "Account created successfully";
+                        } else if (response.status === 409) {
+                            createAccountMsg.textContent = "Username already exists";
+                        } else if (response.status === 400) {
+                            response.json().then(data => {
+                                createAccountMsg.textContent = data.error;
+                            });
+                        } else {
+                            createAccountMsg.textContent = "Error creating account";
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            }
+        }
+    }).mount('#app')
+</script>
+
+<script>
+    const forms = document.querySelectorAll('form');
+
+    forms.forEach(form => {
+        form.addEventListener('submit', function (event) {
+            // prevent the default form submission behavior
+            event.preventDefault();
+        });
+    });
+
+    // add event listener to refresh button
+    document.getElementById("logoutBtn").addEventListener("click", function() {
+        // reload the current page
+        location.reload();
+    });
+</script>
+<script src="checkLogin.js"></script>
+<!-- Optional JavaScript; choose one of the two! -->
+
+<!-- Option 1: Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+<!-- Option 2: Separate Popper and Bootstrap JS -->
+
+<!--
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+-->
+
+</body>
+</html>
