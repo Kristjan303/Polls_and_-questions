@@ -161,6 +161,7 @@ app.post('/logout', (req, res) => {
 });
 
 
+
 // General error handler
 app.use((err, req, res, next) => {
     console.error(err.stack);
@@ -172,5 +173,6 @@ app.listen(port, () => {
     console.log(`App running. Docs at http://localhost:${port}`);
 })
 
+// Fetch account names and its endpoint
 
 

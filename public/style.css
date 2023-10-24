@@ -23,6 +23,7 @@ body{
     width: 280px;
     overflow: hidden;
     box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+    z-index: 10;
 }
 
 #sidebar .d-flex{
@@ -68,8 +69,9 @@ body{
     right: 0;
     left: 280px;
     overflow: hidden;
-    background: #fff;
 }
+
+
 
 #mainbar .d-flex{
     position: relative;
@@ -84,13 +86,17 @@ body{
 #mainbar li{
     display: inline-block;
     float: right;
-    height: 75px;
+    height: 60px;
 }
 
 #mainbar ul{
+    height: 80%;
     list-style-type: none;
-    padding: 0;
+    padding-left: 20px;
+    padding-right: 10px;
     margin: 0;
+    background: white;
+    border-radius: 0px 0px 15px 15px;
 }
 
 #mainbar a {
