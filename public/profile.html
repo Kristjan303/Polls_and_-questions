@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .profile {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 10px;
+            background-color: #ccc;
+        }
+        .profile-picture img {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+        }
+        .edit-profile-picture {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .edit-bio {
+            margin-top: 20px;
+        }
+        .edit-username {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="profile">
+    <div class="profile-picture">
+        <img src="images/important.png" alt="">
+    </div>
+    <div class="edit-profile-picture">
+        <input type="file" id="profile-picture-input" accept="image/*">
+        <button id="change-profile-picture">Change Profile Picture</button>
+    </div>
+    <div class="edit-bio">
+        <label for="bio">Bio:</label>
+        <textarea id="bio" rows="4" cols="50"></textarea>
+    </div>
+    <button id="save-profile">Save Profile</button>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const profilePictureInput = document.getElementById('profile-picture-input');
+        const bioTextarea = document.getElementById('bio');
+        const profilePicture = document.querySelector('.profile-picture img');
+        const sessionId = localStorage.getItem('sessionId');
+        const username = localStorage.getItem('username');
+
+        // Function to load and display the profile picture and bio from localStorage
+        function loadProfileInfo() {
+            const storedProfilePic = localStorage.getItem('profile_pic');
+            if (storedProfilePic) {
+                profilePicture.src = storedProfilePic;
+            }
+
+            const storedBio = localStorage.getItem('bio');
+            if (storedBio) {
+                bioTextarea.value = storedBio;
+            }
+        }
+
+        // Load and display the profile information when the page loads
+        loadProfileInfo();
+
+        document.getElementById('save-profile').addEventListener('click', () => {
+            if (sessionId && username) {
+                const newBio = bioTextarea.value;
+                const newProfilePic = profilePicture.src;
+
+                // Send the profile information to the server, including sessionId and username
+                fetch('/save-profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        sessionId: sessionId,
+                        username: username,
+                        bio: newBio,
+                        profile_pic: newProfilePic,
+                    }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.error) {
+                            alert('Failed to save profile: ' + data.error);
+                        } else {
+                            // Save the profile picture URL and bio in localStorage
+                            localStorage.setItem('profile_pic', newProfilePic);
+                            localStorage.setItem('bio', newBio);
+                            alert('Profile saved successfully');
+                        }
+                    })
+                    .catch((error) => {
+                        alert('Failed to save profile');
+                        console.error(error);
+                    });
+            } else {
+                console.error('Session ID or username not found in local storage');
+            }
+        });
+
+        const changeProfilePictureButton = document.getElementById('change-profile-picture');
+        changeProfilePictureButton.addEventListener('click', () => {
+            profilePictureInput.click();
+        });
+
+        profilePictureInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    profilePicture.src = e.target.result;
+                    // Save the new profile picture URL in localStorage
+                    localStorage.setItem('profile_pic', e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+
+</script>
+</body>
+</html>

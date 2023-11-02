@@ -39,10 +39,12 @@
                         <span class="side-nav-items">Chatty Patty</span>
                     </a>
                 </li>
-                <li><a :href="'/' + username" class="d-flex align-items-center item">
-                    <i class="icon fa-solid fa-user"></i>
-                    <span class="side-nav-item">Profile</span>
-                </a></li>
+                <li>
+                    <a href="#" class="d-flex align-items-center item" @click="redirectToProfile">
+                        <i class="icon fa-solid fa-user"></i>
+                        <span class="side-nav-item">Profile</span>
+                    </a>
+                </li>
                 <li><a href="#" class="d-flex align-items-center item">
                     <i class="icon fa-solid fa-gear"></i>
                     <span class="side-nav-item">Settings</span>
@@ -194,6 +196,12 @@
             }
         },
         methods: {
+
+            redirectToProfile() {
+                // Redirect to the "/profile" page
+                window.location.href = '/profile';
+            },
+
             login: async function () {
                 // Get the username and password from the login form
                 this.username = this.loginModal.username,
@@ -314,9 +322,11 @@
         }
     }).mount('#app')
 
+
 </script>
 
 
+</script>
 
 <script>
     const forms = document.querySelectorAll('form');
