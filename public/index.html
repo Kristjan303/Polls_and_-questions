@@ -34,14 +34,14 @@
         <nav id="sidebar">
             <ul>
                 <li class="main-btn">
-                    <a href="#" class="logo d-flex align-items-center" >
+                    <a href="#" class="logo d-flex align-items-center">
                         <img src="/images/important.png" alt="">
                         <span class="side-nav-items">Chatty Patty</span>
                     </a>
                 </li>
                 <li>
                     <a href="#" class="d-flex align-items-center item" @click="redirectToProfile">
-                        <i class="icon fa-solid fa-user"></i>
+                        <img id="pfp" src="images/important.png" alt="" style="width: 50px; height: 50px; border-radius: 10px; background-color: #ccc; border: #D8E0E8 1px solid;">
                         <span class="side-nav-item">Profile</span>
                     </a>
                 </li>
@@ -57,17 +57,22 @@
 
                 <li class="signin">
                     <!-- Sign in button -->
-                    <button type="button"  data-bs-toggle="modal" data-bs-target="#loginModal" id="mainLoginBtn">Sign in</button>
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#loginModal" id="mainLoginBtn">Sign
+                        in
+                    </button>
                 </li>
 
 
                 <li class="createNewAcc">
                     <!-- Create account button -->
-                    <button type="button" class="btn btn-primary shadow-none" data-bs-toggle="modal" data-bs-target="#registerModal" id="loginBtn">Join Chatty Patty</button>
+                    <button type="button" class="btn btn-primary shadow-none" data-bs-toggle="modal"
+                            data-bs-target="#registerModal" id="loginBtn">Join Chatty Patty
+                    </button>
                 </li>
                 <li class="logout">
                     <!-- Log out button -->
-                    <button @click="logout()" type="button" class="btn btn-primary shadow-none" id="logoutBtn" style="display: none">
+                    <button @click="logout()" type="button" class="btn btn-primary shadow-none" id="logoutBtn"
+                            style="display: none">
                         Log out
                     </button>
                 </li>
@@ -81,22 +86,25 @@
                     <i class="fa-solid fa-plus"></i>
                     <span class="main-nav-item">Create</span>
                 </a></li>
-                <!-- TODO: Adjust search bar placement based on main content position -->
                 <li id="input">
                     <form class="form">
                         <label for="search">
                             <input class="input" type="text" required="" placeholder="Search..." id="search">
                             <div class="fancy-bg"></div>
                             <div class="search">
-                                <svg viewBox="0 0 24 24" aria-hidden="true" class="r-14j79pv r-4qtqp9 r-yyyyoo r-1xvli5t r-dnmrzs r-4wgw6l r-f727ji r-bnwqim r-1plcrui r-lrvibr">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"
+                                     class="r-14j79pv r-4qtqp9 r-yyyyoo r-1xvli5t r-dnmrzs r-4wgw6l r-f727ji r-bnwqim r-1plcrui r-lrvibr">
                                     <g>
                                         <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
                                     </g>
                                 </svg>
                             </div>
                             <button class="close-btn" type="reset">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                     fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                          clip-rule="evenodd"></path>
                                 </svg>
                             </button>
                         </label>
@@ -105,7 +113,6 @@
             </ul>
         </nav>
     </div>
-
 
 
     <!-- Sign in Modal -->
@@ -187,16 +194,17 @@
 </div>
 
 <script>
-    const {createApp} = Vue
+    const {createApp} = Vue;
 
     createApp({
         data() {
             return {
-                loginModal: {}
-            }
+                loginModal: {},
+                bio: localStorage.getItem('bio') || '', // Retrieve the bio from local storage
+                profile_pic: localStorage.getItem('profile_pic') || '', // Retrieve the profile_pic from local storage
+            };
         },
         methods: {
-
             redirectToProfile() {
                 // Redirect to the "/profile" page
                 window.location.href = '/profile';
@@ -204,53 +212,63 @@
 
             login: async function () {
                 // Get the username and password from the login form
-                this.username = this.loginModal.username,
-                    this.password = this.loginModal.password
+                this.username = this.loginModal.username;
+                this.password = this.loginModal.password;
 
                 // Construct a request object to send to the server
                 const loginRequest = {
-                    method: "POST",
+                    method: 'POST',
                     headers: {
-                        "Content-Type": "application/json"
+                        'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
                         username: this.username,
-                        password: this.password
-                    })
+                        password: this.password,
+                    }),
                 };
 
-                // Send the login request to the server using fetch
-                await fetch("http://localhost:3000/sessions", loginRequest)
-                    .then(response => response.json()) // Parse the response JSON
-                    .then(data => {
-                        // Get a reference to the sign-in error message element
-                        let signInMsg = document.getElementById("s-error-msg")
+                try {
+                    // Send the login request to the server using fetch
+                    const response = await fetch('http://localhost:3000/sessions', loginRequest);
+                    const data = await response.json(); // Parse the response JSON
 
-                        // Get a reference to the login modal
+                    // Handle the response and store data in local storage if the login was successful
+                    if (data.error) {
+                        // Handle error case
+                        // Display an error message to the user
+                        let signInMsg = document.getElementById('s-error-msg');
+                        signInMsg.textContent = data.error;
+                    } else {
+                        // If the login was successful, store the session ID,
+                        // the fact that the user is logged in, and the username in local storage
+                        localStorage.setItem('sessionId', data.sessionData.id);
+                        localStorage.setItem('loggedIn', true);
+                        localStorage.setItem('username', this.username);
+
+                        // Store bio and profile_pic in local storage
+                        localStorage.setItem('bio', data.sessionData.bio);
+                        localStorage.setItem('profile_pic', data.sessionData.profile_pic);
+                        console.log(data.sessionData.profile_pic);
+
+                        // Update the data properties
+                        this.bio = data.sessionData.bio;
+                        this.profile_pic = data.sessionData.profile_pic;
+
+                        // Hide the login modal
                         const loginModal = $('#loginModal');
+                        loginModal.modal('hide');
 
-                        // If the server returned an error message, display it
-                        if (data.error) {
-                            signInMsg.textContent = (data.error)
-                        } else {
-                            // If the login was successful, store the session ID,
-                            // the fact that the user is logged in, and the username
-                            // in local storage
-                            localStorage.setItem('sessionId', data.sessionId)
-                            localStorage.setItem('loggedIn', data.loggedIn)
-                            localStorage.setItem('username', this.username)
+                        // Show the logout button and hide the login button
+                        document.getElementById('loginBtn').style.display = 'none';
+                        document.getElementById('logoutBtn').style.display = '';
 
-                            // Hide the login modal
-                            loginModal.modal('hide');
-
-                            // Show the logout button and hide the login button
-                            document.getElementById("loginBtn").style.display = "none"
-                            document.getElementById("logoutBtn").style.display = ""
-
-                            // Redirect to home page
-                            window.location.href = "/";
-                        }
-                    })
+                        // Redirect to the home page
+                        window.location.href = '/';
+                    }
+                } catch (error) {
+                    console.error(error);
+                    // Handle any other error scenarios
+                }
             },
 
             logout: async function () {
@@ -331,6 +349,15 @@
 <script>
     const forms = document.querySelectorAll('form');
 
+    const profilePicElement = document.getElementById('pfp');
+    const profilePicURL = localStorage.getItem('profile_pic');
+
+    if (profilePicURL) {
+        profilePicElement.src = profilePicURL;
+    } else {
+        profilePicElement.src = '/images/important.png';
+    }
+
     forms.forEach(form => {
         form.addEventListener('submit', function (event) {
             // prevent the default form submission behavior
@@ -338,8 +365,10 @@
         });
     });
 
+
+
     // add event listener to refresh button
-    document.getElementById("logoutBtn").addEventListener("click", function() {
+    document.getElementById("logoutBtn").addEventListener("click", function () {
         // reload the current page
         location.reload();
     });

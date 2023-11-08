@@ -1,23 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Jquery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+
+    <!-- Font awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
         .profile {
+            display: table;
             max-width: 400px;
             margin: 0 auto;
             padding: 20px;
+            background-color: white;
+            position: relative;
+            top: 120px;
+            text-align: -webkit-center;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+            border-radius: 0px 15px 15px 15px;
         }
         .profile-picture {
             width: 150px;
             height: 150px;
             border-radius: 10px;
             background-color: #ccc;
+            border: #D8E0E8 1px solid;
+            margin-top: 20px;
         }
         .profile-picture img {
             width: 100%;
@@ -29,11 +50,31 @@
             text-align: center;
         }
         .edit-bio {
-            margin-top: 20px;
+            margin-top: 40px;
         }
-        .edit-username {
+        #save-profile {
             margin-top: 20px;
+            margin-bottom: 20px;
+            background-color: #FFF;
+            transition: color 0.1s ease-in-out;
         }
+
+        #save-profile:hover {
+            color: #0d6efd;
+        }
+        #back-button {
+            position: absolute;
+            top: 0px;
+            left: -50px;
+            background-color: #FFF;
+            transition: background-color 0.1s ease-in-out;
+            border-radius: 50% 0px 0px 50%;
+        }
+        #back-button:hover {
+            color: #0d6efd;
+        }
+
+
     </style>
 </head>
 <body>
@@ -41,15 +82,19 @@
     <div class="profile-picture">
         <img src="images/important.png" alt="">
     </div>
+    <!-- center normally plez -->
     <div class="edit-profile-picture">
-        <input type="file" id="profile-picture-input" accept="image/*">
-        <button id="change-profile-picture">Change Profile Picture</button>
+        <input type="file" id="profile-picture-input" style="margin-top: 20px" accept="image/*">
     </div>
+    <!-- MUST MAKE CHANGE USERNAME SOMEONE PLEASE!!!!!! -->
     <div class="edit-bio">
-        <label for="bio">Bio:</label>
-        <textarea id="bio" rows="4" cols="50"></textarea>
+        <label for="bio"><strong>Edit bio ✏️:</strong></label>
+        <textarea id="bio" rows="4" cols="50" style="border-radius: 0px 0px 20px 0px; background-color: #D8E0E8; padding: 5px;
+"></textarea>
     </div>
-    <button id="save-profile">Save Profile</button>
+    <button id="save-profile" class="btn">Save Profile</button>
+    <button id="back-button" class="btn fa-solid fa-arrow-left"></button>
+
 </div>
 
 <script>
@@ -60,6 +105,10 @@
         const sessionId = localStorage.getItem('sessionId');
         const username = localStorage.getItem('username');
 
+        const backButton = document.getElementById('back-button');
+        backButton.addEventListener('click', () => {
+            history.back();
+        });
         // Function to load and display the profile picture and bio from localStorage
         function loadProfileInfo() {
             const storedProfilePic = localStorage.getItem('profile_pic');
@@ -114,10 +163,6 @@
             }
         });
 
-        const changeProfilePictureButton = document.getElementById('change-profile-picture');
-        changeProfilePictureButton.addEventListener('click', () => {
-            profilePictureInput.click();
-        });
 
         profilePictureInput.addEventListener('change', (event) => {
             const file = event.target.files[0];

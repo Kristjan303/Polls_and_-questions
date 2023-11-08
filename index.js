@@ -6,7 +6,9 @@ const swaggerDocument = yamlJs.load('./swagger.yaml');
 const mysql = require('mysql2')
 const bcrypt = require('bcrypt');
 const swaggerJSDoc = require('swagger-jsdoc'); // Import swagger-jsdoc
-const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
+const sharp = require('sharp');
 
 const cors = require('cors');
 const {join} = require("path");
@@ -74,9 +76,8 @@ app.post('/sessions', (req, res) => {
         return res.status(400).send({ error: "One or more parameters missing" });
     } else {
         // If both username and password are present, query the database to find a matching user
-        con.query('SELECT username, password FROM polls.accounts WHERE username = ?', [req.body.username], function (error, results, fields) {
+        con.query('SELECT username, password, profile_pic, bio FROM polls.accounts WHERE username = ?', [req.body.username], function (error, results, fields) {
             if (error) throw error;
-
             // Check if the query returned any results
             if (results.length > 0) {
                 // If so, compare the hashed password with the plain-text password entered by the user
@@ -85,10 +86,30 @@ app.post('/sessions', (req, res) => {
                     // If the passwords match, create a new session with a random session ID
                     const sessionId = Math.round(Math.random() * 100000000);
                     const session = { id: sessionId, user: req.body.username };
-                    sessions.push(session);
 
-                    // Send a success response with status code 201, indicating that the user is logged in
-                    return res.status(201).send({ success: true, loggedIn: true, sessionId: sessionId });
+                    // Fetch user's bio, profile_pic, and other data from the database
+                    const profile_pic = results[0].profile_pic;
+                    const url = decodeURIComponent(profile_pic);
+                    const imageData = url.substring(url.indexOf(',') + 1);
+                    const bio = results[0].bio;
+
+
+
+                    // Store the session ID, bio, and profile_pic in local storage
+                    sessions.push(session);
+                    const sessionData = {
+                        id: sessionId,
+                        user: req.body.username,
+                        bio: bio,
+                        profile_pic: 'data:image/jpeg;base64,' + imageData
+                    };
+
+                    // Send a success response with status code 201, indicating that the user is logged in, along with the session data
+                    return res.status(201).send({
+                        success: true,
+                        loggedIn: true,
+                        sessionData: sessionData
+                    });
                 } else {
                     // If the passwords do not match, send an error response with status code 401, indicating that the login credentials are invalid
                     return res.status(401).send({ error: "Invalid username or password" });
@@ -184,12 +205,6 @@ app.post('/save-profile', (req, res) => {
     // Verify the session ID and username
     const validSession = sessions.find(session => session.id == sessionId && session.user === username);
 
-    console.log('sessionId:', sessionId, typeof sessionId);
-    console.log('username:', username, typeof username);
-    console.log('validSession:', validSession, typeof validSession);
-    console.log(sessions);
-
-
     if (!validSession) {
         res.status(401).json({ error: 'Unauthorized' });
         return;
@@ -206,24 +221,9 @@ app.post('/save-profile', (req, res) => {
     });
 });
 
-app.get('/get-profile-picture', (req, res) => {
-    const username = req.query.username;
 
-    // Query the database to get the user's profile picture
-    con.query('SELECT profile_pic FROM polls.accounts WHERE username = ?', [username], (error, results) => {
-        if (error) {
-            console.error(error);
-            res.status(500).json({ error: 'Error fetching profile picture' });
-        } else {
-            if (results.length > 0) {
-                const profile_pic = results[0].profile_pic;
-                res.status(200).json({ profile_pic });
-            } else {
-                res.status(404).json({ profile_pic: null });
-            }
-        }
-    });
-});
+
+
 
 // General error handler
 app.use((err, req, res, next) => {

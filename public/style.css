@@ -53,7 +53,7 @@ body{
 }
 
 #sidebar .item span{
-    padding-left: 20px;
+    margin-left: 20px;
 }
 
 .main-btn {
@@ -97,6 +97,8 @@ body{
     margin: 0;
     background: white;
     border-radius: 0px 0px 15px 15px;
+    box-shadow: 0 -5px 35px rgba(0, 0, 0, 0.1);
+
 }
 
 #mainbar a {
