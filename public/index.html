@@ -31,11 +31,11 @@
 <div id="app">
 
     <div>
-        <nav id="sidebar">
+        <nav id="sidebar" style="width: 280px;">
             <ul>
                 <li class="main-btn">
                     <a href="#" class="logo d-flex align-items-center">
-                        <img src="/images/important.png" alt="">
+                        <div class="toggle burger" onclick="toggleSidebar()">☰</div>
                         <span class="side-nav-items">Chatty Patty</span>
                     </a>
                 </li>
@@ -45,7 +45,7 @@
                         <span class="side-nav-item">Profile</span>
                     </a>
                 </li>
-                <li><a href="#" class="d-flex align-items-center item">
+                <li class="toggle"><a href="#" class="d-flex align-items-center item">
                     <i class="icon fa-solid fa-gear"></i>
                     <span class="side-nav-item">Settings</span>
                 </a></li>
@@ -55,34 +55,39 @@
                     <span class="side-nav-item">Contact</span>
                 </a></li>
 
-                <li class="signin">
-                    <!-- Sign in button -->
-                    <button type="button" data-bs-toggle="modal" data-bs-target="#loginModal" id="mainLoginBtn">Sign
-                        in
+                <!-- Sign in button with icon -->
+                <li class="signin acc">
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#loginModal" id="mainLoginBtn" style="transition: width 0.3s ease;">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span class="button-text">Sign in</span>
                     </button>
                 </li>
 
-
-                <li class="createNewAcc">
-                    <!-- Create account button -->
+                <!-- Create account button with icon -->
+                <li class="createNewAcc acc">
                     <button type="button" class="btn btn-primary shadow-none" data-bs-toggle="modal"
-                            data-bs-target="#registerModal" id="loginBtn">Join Chatty Patty
+                            data-bs-target="#registerModal" id="loginBtn" style="transition: width 0.3s ease;">
+                        <i class="fas fa-user-plus"></i>
+                        <span class="button-text">Join Chatty Patty</span>
                     </button>
                 </li>
-                <li class="logout">
-                    <!-- Log out button -->
+
+                <!-- Log out button with icon -->
+                <li class="logout acc">
                     <button @click="logout()" type="button" class="btn btn-primary shadow-none" id="logoutBtn"
-                            style="display: none">
-                        Log out
+                            style="display: none; transition: width 0.3s ease;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span class="button-text">Log out</span>
                     </button>
                 </li>
             </ul>
         </nav>
     </div>
     <div>
-        <nav id="mainbar">
+        <nav id="mainbar" style="left: 280px;">
             <ul>
-                <li><a href="#" class="d-flex align-items-center item">
+                <li class="createChat"><a type="button" data-bs-toggle="modal" href="#" class="d-flex align-items-center item"
+                                          data-bs-target="#createChatModal" id="createChat">
                     <i class="fa-solid fa-plus"></i>
                     <span class="main-nav-item">Create</span>
                 </a></li>
@@ -160,6 +165,33 @@
         </div>
     </div>
 
+    <!-- Create chatroom Modal -->
+    <div class="modal fade" id="createChatModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-keyboard="false" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close btn-close shadow-none" data-bs-dismiss="modal"
+                            aria-label="Close" onclick="clearInputs()"></button>
+                    <div class="myform bg-light">
+                        <!-- The create chat title -->
+                        <h1 class="text-center">Create a chatroom</h1>
+                        <form>
+                            <!-- The chatroom name input field -->
+                            <div class="mb-3 mt-4">
+                                <label class="form-label">Chatroom name</label>
+                                <input type="" class="form-control" v-model="">
+                            </div>
+                            <!-- Create chat button -->
+                            <button @click="" type="submit" class="btn btn-light mt-3" onclick="clearInputs()">
+                                Continue
+                            </button>
+                            <hr>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Register Modal -->
     <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
@@ -229,7 +261,7 @@
 
                 try {
                     // Send the login request to the server using fetch
-                    const response = await fetch('http://localhost:3000/sessions', loginRequest);
+                    const response = await fetch('/sessions', loginRequest);
                     const data = await response.json(); // Parse the response JSON
 
                     // Handle the response and store data in local storage if the login was successful
@@ -284,7 +316,7 @@
                     })
                 }
                 // Send the logout request to the server
-                await fetch("http://localhost:3000/logout", logoutRequest)
+                await fetch("/logout", logoutRequest)
                     .then(response => response.json())
                     .then(data => {
                         // Get the sign-out message element
@@ -352,11 +384,54 @@
     const profilePicElement = document.getElementById('pfp');
     const profilePicURL = localStorage.getItem('profile_pic');
 
+    // Check for profile picture URL initially
     if (profilePicURL) {
         profilePicElement.src = profilePicURL;
     } else {
         profilePicElement.src = '/images/important.png';
     }
+
+
+    // sidebar logic
+    function toggleSidebar() {
+        var sidebar = document.getElementById("sidebar");
+        var mainbar = document.getElementById("mainbar");
+        var buttons = document.querySelectorAll(".signin button, .createNewAcc button, .logout button");
+
+        if (sidebar.style.width === "280px") {
+            sidebar.style.width = "80px";
+            mainbar.style.left = "80px";
+            buttons.forEach(function (button) {
+                button.style.width = "50px";
+                button.querySelector('.button-text').style.display = 'none';
+
+            });
+
+
+        } else {
+            sidebar.style.width = "280px";
+            mainbar.style.left = "280px";
+            buttons.forEach(function (button) {
+                button.style.width = "";
+                setTimeout(function () {
+                    button.querySelector('.button-text').style.display = '';
+                }, 100); // 200 milliseconds delay
+            });
+        }
+    }
+
+
+
+
+    // Set up an event listener for storage events
+    window.addEventListener('storage', (event) => {
+        if (event.key === 'profile_pic') {
+            // Update the profile picture source if the changed key is 'profile_pic'
+            const updatedProfilePicURL = localStorage.getItem('profile_pic');
+            profilePicElement.src = updatedProfilePicURL;
+        }
+    });
+
 
     forms.forEach(form => {
         form.addEventListener('submit', function (event) {

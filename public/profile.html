@@ -82,15 +82,15 @@
     <div class="profile-picture">
         <img src="images/important.png" alt="">
     </div>
-    <!-- center normally plez -->
     <div class="edit-profile-picture">
         <input type="file" id="profile-picture-input" style="margin-top: 20px" accept="image/*">
     </div>
     <!-- MUST MAKE CHANGE USERNAME SOMEONE PLEASE!!!!!! -->
     <div class="edit-bio">
         <label for="bio"><strong>Edit bio ✏️:</strong></label>
-        <textarea id="bio" rows="4" cols="50" style="border-radius: 0px 0px 20px 0px; background-color: #D8E0E8; padding: 5px;
-"></textarea>
+        <textarea maxlength="190" id="bio" rows="6" cols="50" style="border-radius: 0px 0px 20px 0px; background-color: #D8E0E8; padding: 5px;">
+        </textarea><span id="characterCount" style="float: right; position: absolute; bottom: 70px; right: 20px" ><div class="progress-bar">
+        </div>0/190</span>
     </div>
     <button id="save-profile" class="btn">Save Profile</button>
     <button id="back-button" class="btn fa-solid fa-arrow-left"></button>
@@ -122,6 +122,15 @@
             }
         }
 
+        const inputElement = document.getElementById('bio');
+        const characterCountElement = document.getElementById('characterCount');
+
+        inputElement.addEventListener('keyup', () => {
+            const textLength = inputElement.value.length;
+            const remainingCharacters = 190 - textLength;
+            characterCountElement.textContent = `${textLength}/${190}`;
+        });
+
         // Load and display the profile information when the page loads
         loadProfileInfo();
 
@@ -143,7 +152,16 @@
                         profile_pic: newProfilePic,
                     }),
                 })
-                    .then((response) => response.json())
+                    .then((response) => {
+                        if (response.status === 413) {
+                            // Payload too large error (HTTP status code 413)
+                            alert('Error: Payload is too large. Please try a smaller profile picture.');
+                        } else if (response.ok) {
+                            return response.json();
+                        } else {
+                            throw new Error('Failed to save profile');
+                        }
+                    })
                     .then((data) => {
                         if (data.error) {
                             alert('Failed to save profile: ' + data.error);
@@ -155,9 +173,9 @@
                         }
                     })
                     .catch((error) => {
-                        alert('Failed to save profile');
                         console.error(error);
                     });
+
             } else {
                 console.error('Session ID or username not found in local storage');
             }
