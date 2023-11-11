@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Jquery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Google fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+
+  <!-- Font awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Friends</title>
+  <style>
+
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .friends {
+      display: flex;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: white;
+      position: relative;
+      top: 120px;
+      text-align: -webkit-center;
+      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+      border-radius: 0px 15px 15px 15px;
+    }
+    .friend-page {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: white;
+        position: relative;
+        text-align: -webkit-center;
+    }
+
+    .requests {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: white;
+        position: relative;
+        text-align: -webkit-center;
+    }
+    #friendInput {
+      margin-right: 10px;
+    }
+
+
+
+    #friendsList {
+      padding-top: 40px;
+      text-align: left;
+      display: inline;
+    }
+
+
+    #friendsList li {
+      padding-top: 5px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #D8E0E8;
+      transition: 0.2s ease;
+    }
+
+
+    #friendsList li:hover {
+      background-color: #D8E0E8;
+    }
+    #friendsList li button {
+      display: none;
+      font-size: 50%;
+
+
+    }
+    #friendsList li:hover button {
+      display: inline-block;
+      float: right;
+      background-color: #D8E0E8 ;
+      color: red;
+      border-radius: 5px;
+      font-weight: bold;
+      padding-bottom: 4px;
+      padding-right: 4px;
+    }
+
+    #addFriend {
+      background-color: #0d6efd;
+      border: none;
+      padding: 5px;
+      border-radius: 5px;
+      color: white;
+      transition: 0.2s;
+    }
+    #addFriend:hover {
+      background-color: #D8E0E8;
+      color: #000000;
+
+    }
+    #counter {
+      font-size: 80%;
+      text-align: right;
+      margin-top: 30px;
+    }
+
+    #searchInput{
+      background-color: #D8E0E8 ;
+      padding: 5px;
+      border-radius: 5px;
+    }
+    .searchFriend {
+      padding-top: 20px;
+      display: grid;
+    }
+    .addFriend {
+      padding-top: 20px;
+      display: grid;
+    }
+    .addFriend-a {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+    }
+    .clearInput {
+      position: absolute;
+      right: 25px;
+      margin-top: 40px;
+      width: 35px;
+      height: 35px;
+      background: none;
+      color: #0d6efd;
+    }
+
+
+
+
+
+  </style>
+</head>
+<body>
+
+  <div class="friends">
+    <button id="back-button" class="btn fa-solid fa-arrow-left"></button>
+    <div class="friend-page">
+      <h2>Your friends</h2>
+      <div class="addFriend">
+        <label style="font-weight: bold" for="friendInput">Add a friend:</label>
+        <div class="addFriend-a">
+          <input type="text" id="friendInput" placeholder="Enter user's name" style="background-color: #D8E0E8; padding: 5px; border-radius: 5px">
+          <button id="addFriend" onclick="addFriend()">Add Friend</button>
+        </div>
+      </div>
+      <div class="searchFriend">
+        <label style="font-weight: bold" for="searchInput">Search from friends:</label>
+        <input type="text" id="searchInput" oninput="searchFriends()" placeholder="Enter friend's username">
+        <button class="clearInput" onclick="clearInput()">
+          <i class="fa-solid fa-circle-xmark fa-lg"></i>
+        </button>
+      </div>
+
+
+      <ul id="friendsList">
+      </ul>
+      <p id="counter">Friends: 0</p>
+    </div>
+
+    <div class="requests">
+      <h2>Notifications</h2>
+      <ul id="friendRequests">
+
+      </ul>
+    </div>
+  </div>
+  <script>
+
+    const searchFriends = () => {
+      const searchInput = document.getElementById('searchInput').value.toLowerCase();
+      const friendsList = document.getElementById('friendsList');
+
+      // Loop through each friend in the list and show/hide based on the search input
+      for (const listItem of friendsList.children) {
+        const username = listItem.querySelector('span').textContent.toLowerCase();
+        if (username.includes(searchInput)) {
+          listItem.style.display = 'block';
+        } else {
+          listItem.style.display = 'none';
+        }
+      }
+    };
+
+    // Function to clear the search input
+    function clearInput() {
+      document.getElementById('searchInput').value = '';
+
+      // Show all friends in the list
+      const friendsList = document.getElementById('friendsList');
+      for (const listItem of friendsList.children) {
+        listItem.style.display = 'block';
+      }
+    }
+    function addFriend() {
+      const friendUsername = document.getElementById('friendInput').value;
+      const sessionId = localStorage.getItem('sessionId');
+      const username = localStorage.getItem('username');
+
+      fetch('/addFriend', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: username, sessionId: sessionId, friendUsername: friendUsername }),
+      })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  alert('Friend added successfully!');
+                } else {
+                  alert(data.error || 'Error adding friend. Please check the friend username.');
+                }
+              })
+              .catch((error) => {
+                console.error('Error:', error);
+                alert('An unexpected error occurred.');
+              });
+    }
+    const serverUrl = 'http://192.168.22.71:3000';
+    const sessionId = localStorage.getItem('sessionId');
+    const username = localStorage.getItem('username');
+
+    // Function to handle friend removal
+    const removeFriend = (friendUsername) => {
+
+      // Show a confirmation dialog
+      const isConfirmed = confirm(`Are you sure you want to remove ${friendUsername} from your friends?`);
+
+      if (!isConfirmed) {
+        return; // Do nothing if the user cancels the confirmation
+      }
+      // Send a request to the server to remove the friend from the database
+      fetch(`${serverUrl}/removeFriend?username=${username}&sessionId=${sessionId}&friendUsername=${friendUsername}`, {
+        method: 'DELETE'
+      })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  // Remove the li element from the list
+                  const listItem = document.getElementById(`friend-${friendUsername}`);
+                  if (listItem) {
+                    listItem.remove();
+                  }
+
+                  // Update the counter
+                  const counterElement = document.getElementById('counter');
+                  counterElement.textContent = `Friends: ${document.getElementById('friendsList').childElementCount}`;
+                } else {
+                  console.error('Failed to remove friend:', data.error);
+                  // Optionally, display an alert or handle the error in a way suitable for your application
+                }
+              })
+              .catch(error => console.error('Error:', error));
+    };
+
+
+    // Make a GET request to the server to fetch account names
+    fetch(`${serverUrl}/accountNames?username=${username}&sessionId=${sessionId}`)
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                const friendsList = document.getElementById('friendsList');
+                const counterElement = document.getElementById('counter');
+
+                // Clear existing content
+                friendsList.innerHTML = '';
+
+                // Add each username as a list item with a remove button
+                data.accountNames.forEach(account => {
+                  const listItem = document.createElement('li');
+
+
+                  // Create an image element for the profile picture
+                  const profilePic = document.createElement('img');
+                  profilePic.src = account.profile_pic; // Assuming the server provides the profile picture URL
+                  profilePic.alt = '';
+                  profilePic.width = 30;
+                  profilePic.height = 30;
+                  profilePic.style.borderRadius = '5px';
+                  profilePic.style.marginRight = '10px';
+
+                  // Use the profile picture as a bullet point
+                  listItem.style.listStyle = 'none';
+                  listItem.style.display = 'block'; // Flex display to align items
+                  listItem.style.alignItems = 'center'; // Center align items
+                  listItem.appendChild(profilePic);
+
+                  // Add the friend's username
+                  const usernameSpan = document.createElement('span');
+                  usernameSpan.textContent = account.username;
+                  listItem.appendChild(usernameSpan);
+                  usernameSpan.style.fontWeight = 'bold';
+
+                  // Add the friend's bio
+                  const bioSpan = document.createElement('span');
+                  bioSpan.textContent = account.bio || ''; // Use an empty string if account.bio is null or undefined
+                  bioSpan.style.display = 'block'; // Display the bio on a new line
+                  bioSpan.style.maxWidth = '300px'; // Set the maximum width
+                  bioSpan.style.wordWrap = 'break-word'; // Allow long words to wrap
+                  bioSpan.style.marginTop = '10px';
+                  bioSpan.style.fontSize = '90%';
+                  bioSpan.style.marginRight = '10px';
+
+// Add a check to see if the bio needs to be scrollable
+                  if (bioSpan.textContent.length > 4 * 30) { // Assuming an average of 50 characters per row
+                    bioSpan.style.overflowY = 'auto';
+                    bioSpan.style.maxHeight = '80px'; // Adjust based on your design, considering 4 rows with 18px font size
+                    bioSpan.style.scrollbarWidth = 'thin'; // Hide the scrollbar
+                  }
+
+                  listItem.appendChild(bioSpan);
+
+
+                  // Create the remove button with an icon
+                  const removeButton = document.createElement('button');
+                  const removeIcon = document.createElement('i');
+                  removeIcon.classList.add('fa-solid', 'fa-user-large-slash');
+                  removeIcon.style.fontSize = '250%'; // Set the font size to 50%
+                  removeIcon.style.textAlign = 'center'; // Set the icon color to black
+                  removeButton.appendChild(removeIcon);
+
+                  removeButton.addEventListener('click', () => removeFriend(account.username));
+                  removeButton.style.float = 'right';
+
+                  listItem.appendChild(removeButton);
+                  listItem.id = `friend-${account.username}`;
+                  friendsList.appendChild(listItem);
+                });
+
+                // Update the counter
+                counterElement.textContent = `Friends: ${data.accountNames.length}`;
+              } else {
+                console.error('Failed to fetch account names:', data.error);
+              }
+            })
+
+            .catch(error => console.error('Error:', error));
+
+  </script>
+  <script src="public.js"></script>
+
+</body>
+</html>

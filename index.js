@@ -9,9 +9,10 @@ const swaggerJSDoc = require('swagger-jsdoc'); // Import swagger-jsdoc
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
-
+const bodyParser = require('body-parser');
 const cors = require('cors');
 const {join} = require("path");
+
 
 // Use the cors middleware with default options
 app.use(cors());
@@ -76,7 +77,7 @@ app.post('/sessions', (req, res) => {
         return res.status(400).send({ error: "One or more parameters missing" });
     } else {
         // If both username and password are present, query the database to find a matching user
-        con.query('SELECT username, password, profile_pic, bio FROM polls.accounts WHERE username = ?', [req.body.username], function (error, results, fields) {
+        con.query('SELECT id, username, password, profile_pic, bio FROM polls.accounts WHERE username = ?', [req.body.username], function (error, results, fields) {
             if (error) throw error;
             // Check if the query returned any results
             if (results.length > 0) {
@@ -92,6 +93,7 @@ app.post('/sessions', (req, res) => {
                     const url = decodeURIComponent(profile_pic);
                     const imageData = url.substring(url.indexOf(',') + 1);
                     const bio = results[0].bio;
+                    const user_id = results[0].id;
 
 
 
@@ -155,8 +157,15 @@ app.post('/registration', (req, res) => {
             const salt = bcrypt.genSaltSync(10);
             const hashedPassword = bcrypt.hashSync(password, salt);
 
-            // Insert new user into accounts table
-            const newAccount = { username, password: hashedPassword };
+            const defaultBio = '';
+
+            // Read image file and encode it into base64
+            const imagePath = 'public/images/important.png';
+            const imageBuffer = fs.readFileSync(imagePath);
+            const base64Image = imageBuffer.toString('base64');
+
+            // Insert new user into accounts table with the base64-encoded image
+            const newAccount = { username, password: hashedPassword, bio: defaultBio, profile_pic: base64Image };
             con.query('INSERT INTO polls.accounts SET ?', newAccount, (error, results) => {
                 if (error) {
                     console.error(error);
@@ -193,12 +202,197 @@ app.post('/logout', (req, res) => {
     }
 });
 
+// Endpoint to handle adding a friend
+app.use(bodyParser.json());
+app.post('/addFriend', (req, res) => {
+    const { username, sessionId, friendUsername } = req.body;
+
+    // Verify the session ID and username
+    const validSession = sessions.find(session => session.id == sessionId && session.user === username);
+
+    if (!validSession) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    // Now, you can use the user information from the session
+    const user1 = validSession.user;
+
+    // Continue with the rest of your logic
+    const checkUserQuery = 'SELECT id FROM polls.accounts WHERE username = ?';
+    con.query(checkUserQuery, [user1], (err, results) => {
+        if (err) {
+            console.error('Error checking logged-in user:', err);
+            return res.status(500).json({ success: false, error: 'Internal Server Error' });
+        }
+
+        if (results.length === 0) {
+            // Logged-in user not found
+            return res.json({ success: false, error: 'Logged-in user not found' });
+        } else {
+            // Logged-in user found, use the id for user1
+            const user1Id = results[0].id;
+
+            // Now, check the friend's username
+            con.query(checkUserQuery, [friendUsername], (err, friendResults) => {
+                if (err) {
+                    console.error('Error checking friend username:', err);
+                    return res.status(500).json({ success: false, error: 'Internal Server Error' });
+                }
+
+                if (friendResults.length === 0) {
+                    // Friend username not found
+                    return res.json({ success: false, error: 'Friend username not found' });
+                } else {
+                    // Friend username found, add a row to the "friends" table
+                    const befriendedId = friendResults[0].id;
+
+                    // Check if user1 and user2 are the same
+                    if (user1Id === befriendedId) {
+                        return res.json({ success: false, error: 'You can\'t be friends with yourself 😜' });
+                    }
+
+                    // Use the stored procedure to insert the friend relationship
+                    const insertFriendProcedure = 'CALL insert_friend(?, ?)';
+                    con.query(insertFriendProcedure, [user1Id, befriendedId], (err, result) => {
+                        if (err) {
+                            if (err.code === 'ER_DUP_ENTRY') {
+                                // Duplicate entry error, user is already a friend
+                                return res.json({ success: false, error: 'You are already friends with this user' });
+                            } else {
+                                console.error('Error adding friend:', err);
+                                return res.status(500).json({ success: false, error: 'Internal Server Error' });
+                            }
+                        } else {
+                            return res.json({ success: true });
+                        }
+                    });
+                }
+            });
+        }
+    });
+});
+
+
+
+
+// Endpoint to fetch account names and related data
+app.get('/accountNames', (req, res) => {
+    const { username, sessionId } = req.query;
+
+    // Verify the session ID and username
+    const validSession = sessions.find(session => session.id == sessionId && session.user === username);
+
+    if (!validSession) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    // Now, you can use the user information from the session
+    const user1 = validSession.user;
+
+    // Continue with the rest of your logic
+    const getFriendsQuery = `
+        SELECT friends.user2, accounts.username, accounts.profile_pic, accounts.bio
+        FROM friends
+                 JOIN accounts ON friends.user2 = accounts.id
+        WHERE friends.user1 = (
+            SELECT id FROM accounts WHERE username = ?
+        )
+    `;
+
+    con.query(getFriendsQuery, [user1], (err, results) => {
+        if (err) {
+            console.error('Error fetching account names:', err);
+            return res.status(500).json({ success: false, error: 'Internal Server Error' });
+        }
+
+        const accountNames = results.map(row => {
+            // Encode the profile_pic into base64
+            const url = decodeURIComponent(row.profile_pic);
+            const imageData = url.substring(url.indexOf(',') + 1);
+            const base64Image = 'data:image/jpeg;base64,' + imageData;
+            const bio = row.bio;
+
+            return {
+                username: row.username,
+                friendId: row.id,
+                profile_pic: base64Image,
+                bio: bio
+            };
+        });
+
+        return res.json({ success: true, accountNames });
+    });
+});
+
+// Endpoint to remove a friend from the database
+
+app.delete('/removeFriend', (req, res) => {
+    const { username, sessionId, friendUsername } = req.query;
+
+    // Verify the session ID and username
+    const validSession = sessions.find(session => session.id == sessionId && session.user === username);
+
+    if (!validSession) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    // Now, you can use the user information from the session
+    const user1 = validSession.user;
+
+    // Find the user1's ID
+    const getUser1IdQuery = 'SELECT id FROM accounts WHERE username = ?';
+    con.query(getUser1IdQuery, [user1], (err, user1Results) => {
+        if (err) {
+            console.error('Error getting user1 ID:', err);
+            return res.status(500).json({ success: false, error: 'Internal Server Error' });
+        }
+
+        if (user1Results.length === 0) {
+            return res.json({ success: false, error: 'User1 not found' });
+        }
+
+        const user1Id = user1Results[0].id;
+
+        // Find the friend's ID
+        const getUser2IdQuery = 'SELECT id FROM accounts WHERE username = ?';
+        con.query(getUser2IdQuery, [friendUsername], (err, user2Results) => {
+            if (err) {
+                console.error('Error getting user2 ID:', err);
+                return res.status(500).json({ success: false, error: 'Internal Server Error' });
+            }
+
+            if (user2Results.length === 0) {
+                return res.json({ success: false, error: 'Friend not found' });
+            }
+
+            const user2Id = user2Results[0].id;
+
+            // Remove all rows with user1 and user2 or user2 and user1
+            const removeFriendQuery = 'DELETE FROM friends WHERE (user1 = ? AND user2 = ?) OR (user1 = ? AND user2 = ?)';
+            con.query(removeFriendQuery, [user1Id, user2Id, user2Id, user1Id], (err, result) => {
+                if (err) {
+                    console.error('Error removing friend:', err);
+                    return res.status(500).json({ success: false, error: 'Internal Server Error' });
+                }
+
+                return res.json({ success: true });
+            });
+        });
+    });
+});
+
 
 
 app.get('/profile', (req, res) => {
     const profilePagePath = join(__dirname, 'public', 'profile.html'); // Get the full path to the HTML file
     res.sendFile(profilePagePath); // Serve the HTML file
 });
+
+app.get('/friends', (req, res) => {
+    const friendsPagePath = join(__dirname, 'public', 'friends.html');
+    res.sendFile(friendsPagePath);
+});
+
 app.post('/save-profile', (req, res) => {
     const { sessionId, username, bio, profile_pic } = req.body;
 

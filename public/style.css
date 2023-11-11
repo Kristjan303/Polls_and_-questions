@@ -12,6 +12,18 @@ body{
     font-family: 'Roboto', sans-serif;
 }
 
+#back-button {
+    position: absolute;
+    top: 0px;
+    left: -50px;
+    background-color: #FFF;
+    transition: background-color 0.1s ease-in-out;
+    border-radius: 50% 0px 0px 50%;
+}
+#back-button:hover {
+    color: #0d6efd;
+}
+
 .toggle {
     cursor: pointer;
 
@@ -23,6 +35,64 @@ body{
     font-size: 30px;
     color: #0d6efd;
 }
+
+.createOrJoinChat {
+    padding: 2rem;
+}
+
+
+/* Styling for the chat modal */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
+    z-index: 2;
+}
+
+.chatModal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 3;
+}
+
+/* Style the modal header */
+.chatModal-header {
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Style the modal body (this is where the chat content will be) */
+.chatModal-body {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Style the close button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
 
 /* - - - Sidebar styles  - - - */
 #sidebar{
@@ -71,7 +141,9 @@ body{
 #sidebar i {
     margin-right: 10px;
     margin-top: 10px;
+}
 
+#sidebar img {
 }
 
 #sidebar .acc i {
@@ -86,6 +158,8 @@ body{
 
 #sidebar .item span{
     margin-left: 20px;
+    font-weight: bold;
+    font-size: 110%;
 }
 
 .main-btn {
@@ -375,6 +449,7 @@ a:hover{
 .modal-content {
     width: 80%;
     margin: 0 auto;
+    display: contents;
 }
 
 .modal-body {
@@ -424,6 +499,18 @@ h1 {
     border-radius: 20px;
     padding: 0.5em 0;
     color: #fff;
+}
+
+
+.createOrJoinChat .btn {
+    font-family: Roboto, sans-serif;
+    width: 30%;
+    font-weight: 500;
+    background-color: #0d6efd;
+    border-radius: 20px;
+    padding: 0.5em 0;
+    color: #fff;
+    margin-bottom: 20px;
 }
 
 .myform .btn:hover {
@@ -480,4 +567,14 @@ label {
     top: 20px;
     right: 20px;
     cursor: pointer;
+}
+
+.content {
+    left: 280px;
+    position: absolute;
+    top: 100px;
+    padding: 50px;
+    display: inline-block;
+    transition: left 0.3s ease;
+
 }

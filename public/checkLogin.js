@@ -1,21 +1,31 @@
 window.onload = checkSession();
+
 function checkSession() {
-    if (localStorage.length >= 2) {
+    // Check if the user is logged in
+    if (localStorage.getItem("loggedIn")) {
+        // User is logged in, allow the Friends link to redirect
+        document.getElementById("friendsLink").addEventListener("click", function () {
+            window.location.href = "/friends";
+        }),
+        document.getElementById("profileLink").addEventListener("click", function () {
+            window.location.href = "/profile";
+        });
+
+        // Hide the login buttons
         document.getElementById("loginBtn").style.display = "none";
         document.getElementById("mainLoginBtn").style.display = "none";
-        document.getElementById('logoutBtn').style.display = ""
-    }
-    // check if user is logged in
-    if (!localStorage.getItem("loggedIn")) {
-        // add event listener to each anchor tag inside mainbar and sidenav
-        document.querySelectorAll("nav#mainbar ul li a, nav#sidebar ul li a").forEach(function(element) {
-            element.addEventListener("click", function(event) {
-                // prevent default anchor tag behavior
-                event.preventDefault();
-                // open Bootstrap modal
-                var loginModal = new bootstrap.Modal(document.getElementById("loginModal"));
-                loginModal.show();
-            });
+        document.getElementById('logoutBtn').style.display = "";
+    } else {
+        // User is not logged in, show the login modal on click
+        document.getElementById("friendsLink").addEventListener("click", function (event) {
+            event.preventDefault();
+            var loginModal = new bootstrap.Modal(document.getElementById("loginModal"));
+            loginModal.show();
+        });
+        document.getElementById("profileLink").addEventListener("click", function (event) {
+            event.preventDefault();
+            var loginModal = new bootstrap.Modal(document.getElementById("loginModal"));
+            loginModal.show();
         });
     }
 }

@@ -19,10 +19,12 @@
   "homepage": "https://github.com/henno/backend#readme",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "express-session": "^1.17.3",
     "fs": "^0.0.1-security",
     "image-compression": "^0.0.6",
     "image-compressor": "^2.0.3",

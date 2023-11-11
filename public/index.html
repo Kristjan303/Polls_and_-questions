@@ -40,20 +40,25 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="d-flex align-items-center item" @click="redirectToProfile">
-                        <img id="pfp" src="images/important.png" alt="" style="width: 50px; height: 50px; border-radius: 10px; background-color: #ccc; border: #D8E0E8 1px solid;">
-                        <span class="side-nav-item">Profile</span>
+                    <a href="/profile" class="d-flex align-items-center item" id="profileLink">
+                        <img id="pfp" src="" alt="" style="width: 50px; height: 50px; border-radius: 10px; background-color: #ccc; border: #D8E0E8 1px solid;">
+                        <span class="side-nav-item" id="profileName">Profile</span>
                     </a>
                 </li>
-                <li class="toggle"><a href="#" class="d-flex align-items-center item">
-                    <i class="icon fa-solid fa-gear"></i>
-                    <span class="side-nav-item">Settings</span>
-                </a></li>
+                <li>
+                    <a href="/friends" id="friendsLink" class="d-flex align-items-center item">
+                        <i class="fa-solid fa-users"></i>
+                        <span class="side-nav-item">Friends</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="d-flex align-items-center item">
+                        <i class="fa-solid fa-sliders"></i>
+                        <span class="side-nav-item">Settings</span>
+                    </a>
+                </li>
 
-                <li><a href="#" class="d-flex align-items-center item">
-                    <i class="icon fa-solid fa-phone"></i>
-                    <span class="side-nav-item">Contact</span>
-                </a></li>
+
 
                 <!-- Sign in button with icon -->
                 <li class="signin acc">
@@ -83,6 +88,14 @@
             </ul>
         </nav>
     </div>
+
+    <div id="overlay" class="overlay"></div>
+    <div class="content" id="content">
+        <div id="modalLinksContainer">
+            <!-- <button onclick="openChatModal()">Open Chat Room</button> -->
+        </div>
+    </div>
+
     <div>
         <nav id="mainbar" style="left: 280px;">
             <ul>
@@ -119,6 +132,21 @@
         </nav>
     </div>
 
+
+    <!-- Chatroom Modal -->
+    <div id="chatModal" class="chatModal">
+        <!-- Modal content -->
+        <div class="chatModal-content">
+            <span class="close" onclick="closeChatModal()">&times;</span>
+            <div class="chatModal-header">
+                <h2 class="chatRoomName" id="chatRoomName">Chat1</h2>
+            </div>
+            <div class="chatModal-body">
+                <!-- Chat content goes here -->
+                <p>Welcome to the chat room!</p>
+            </div>
+        </div>
+    </div>
 
     <!-- Sign in Modal -->
     <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true"
@@ -174,19 +202,34 @@
                             aria-label="Close" onclick="clearInputs()"></button>
                     <div class="myform bg-light">
                         <!-- The create chat title -->
-                        <h1 class="text-center">Create a chatroom</h1>
-                        <form>
-                            <!-- The chatroom name input field -->
-                            <div class="mb-3 mt-4">
-                                <label class="form-label">Chatroom name</label>
-                                <input type="" class="form-control" v-model="">
-                            </div>
-                            <!-- Create chat button -->
-                            <button @click="" type="submit" class="btn btn-light mt-3" onclick="clearInputs()">
-                                Continue
-                            </button>
-                            <hr>
-                        </form>
+                        <div class="createOrJoinChat">
+                            <h1 class="text-center">Create a chatroom</h1>
+                            <form>
+                                <!-- The chatroom name input field -->
+                                <div class="mb-3 mt-4">
+                                    <label class="form-label">Chatroom name</label>
+                                    <input type="" class="form-control" id="modalNameInput">
+                                </div>
+                                <!-- Create chat button -->
+                                <button @click="" type="submit" class="btn btn-light mt-3" onclick="createModal()">
+                                    Create
+                                </button>
+                                <hr>
+                            </form>
+                            <!-- The join code chat title -->
+                            <h1 class="text-center">Join a chatroom</h1>
+                            <form>
+                                <!-- The chatroom name input field -->
+                                <div class="mb-3 mt-4">
+                                    <label class="form-label">Join code</label>
+                                    <input type="" class="form-control" v-model="">
+                                </div>
+                                <!-- Create chat button -->
+                                <button @click="" type="submit" class="btn btn-light mt-3" onclick="clearInputs()">
+                                    Join
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -206,7 +249,7 @@
                         <form>
                             <div class="mb-3 mt-4">
                                 <label class="form-label">Username</label>
-                                <input type="username" class="form-control" v-model="loginModal.username">
+                                <input type="username" class="form-control" v-model="loginModal.username" maxlength="18">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Password</label>
@@ -391,16 +434,27 @@
         profilePicElement.src = '/images/important.png';
     }
 
+    document.addEventListener('DOMContentLoaded', function() {
 
+        const username = localStorage.getItem('username');
+
+        // Update the profile name
+        const profileNameElement = document.getElementById('profileName');
+        if (profileNameElement) {
+            profileNameElement.textContent = username || 'Profile';
+        }
+    });
     // sidebar logic
     function toggleSidebar() {
         var sidebar = document.getElementById("sidebar");
         var mainbar = document.getElementById("mainbar");
+        var content = document.getElementById("content");
         var buttons = document.querySelectorAll(".signin button, .createNewAcc button, .logout button");
 
         if (sidebar.style.width === "280px") {
             sidebar.style.width = "80px";
             mainbar.style.left = "80px";
+            content.style.left = "80px";
             buttons.forEach(function (button) {
                 button.style.width = "50px";
                 button.querySelector('.button-text').style.display = 'none';
@@ -411,6 +465,7 @@
         } else {
             sidebar.style.width = "280px";
             mainbar.style.left = "280px";
+            content.style.left = "280px";
             buttons.forEach(function (button) {
                 button.style.width = "";
                 setTimeout(function () {
@@ -420,6 +475,29 @@
         }
     }
 
+
+    // Get the modal
+    var overlay = document.getElementById('overlay');
+    var modal = document.getElementById('chatModal');
+
+    // Function to open the modal
+    function openChatModal() {
+        modal.style.display = 'block';
+        overlay.style.display = 'block';
+    }
+
+    // Function to close the modal
+    function closeChatModal() {
+        modal.style.display = 'none';
+        overlay.style.display = 'none';
+    }
+
+    // Close the modal if the user clicks outside of it or on the overlay
+    window.onclick = function (event) {
+        if (event.target === modal || event.target === overlay) {
+            closeChatModal();
+        }
+    };
 
 
 

@@ -62,140 +62,137 @@
         #save-profile:hover {
             color: #0d6efd;
         }
-        #back-button {
-            position: absolute;
-            top: 0px;
-            left: -50px;
-            background-color: #FFF;
-            transition: background-color 0.1s ease-in-out;
-            border-radius: 50% 0px 0px 50%;
-        }
-        #back-button:hover {
-            color: #0d6efd;
-        }
+
 
 
     </style>
 </head>
 <body>
-<div class="profile">
-    <div class="profile-picture">
-        <img src="images/important.png" alt="">
-    </div>
-    <div class="edit-profile-picture">
-        <input type="file" id="profile-picture-input" style="margin-top: 20px" accept="image/*">
-    </div>
-    <!-- MUST MAKE CHANGE USERNAME SOMEONE PLEASE!!!!!! -->
-    <div class="edit-bio">
-        <label for="bio"><strong>Edit bio ✏️:</strong></label>
-        <textarea maxlength="190" id="bio" rows="6" cols="50" style="border-radius: 0px 0px 20px 0px; background-color: #D8E0E8; padding: 5px;">
-        </textarea><span id="characterCount" style="float: right; position: absolute; bottom: 70px; right: 20px" ><div class="progress-bar">
-        </div>0/190</span>
-    </div>
-    <button id="save-profile" class="btn">Save Profile</button>
-    <button id="back-button" class="btn fa-solid fa-arrow-left"></button>
+    <div class="profile">
+        <h2 style="margin-top: 20px;">Edit profile:</h2>
+        <p id="profileName" style="margin-bottom: 50px; margin-top: -5px; font-size: 80%" >Profile</p>
+        <div class="profile-picture">
+            <img src="" alt="">
+        </div>
+        <div class="edit-profile-picture">
+            <input type="file" id="profile-picture-input" style="margin-top: 20px" accept="image/*">
+        </div>
+        <!-- MUST MAKE CHANGE USERNAME SOMEONE PLEASE!!!!!! -->
+        <div class="edit-bio">
+            <label for="bio"><strong>Edit bio ✏️:</strong></label>
+            <textarea maxlength="190" id="bio" rows="6" cols="50" style="border-radius: 0px 0px 20px 0px; background-color: #D8E0E8; padding: 5px; white-space: pre-wrap">
+            </textarea><span id="characterCount" style="float: right; position: absolute; bottom: 70px; right: 20px" ><div class="progress-bar">
+            </div>0/190</span>
+        </div>
+        <button id="save-profile" class="btn">Save Profile</button>
+        <button id="back-button" class="btn fa-solid fa-arrow-left"></button>
 
-</div>
+    </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const profilePictureInput = document.getElementById('profile-picture-input');
-        const bioTextarea = document.getElementById('bio');
-        const profilePicture = document.querySelector('.profile-picture img');
-        const sessionId = localStorage.getItem('sessionId');
-        const username = localStorage.getItem('username');
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const profilePictureInput = document.getElementById('profile-picture-input');
+            const bioTextarea = document.getElementById('bio');
+            const profilePicture = document.querySelector('.profile-picture img');
+            const sessionId = localStorage.getItem('sessionId');
+            const username = localStorage.getItem('username');
 
-        const backButton = document.getElementById('back-button');
-        backButton.addEventListener('click', () => {
-            history.back();
-        });
-        // Function to load and display the profile picture and bio from localStorage
-        function loadProfileInfo() {
-            const storedProfilePic = localStorage.getItem('profile_pic');
-            if (storedProfilePic) {
-                profilePicture.src = storedProfilePic;
+
+            var textarea = document.getElementById('bio');
+            textarea.value = textarea.value.replace(/\n/g, ' ');
+
+            // Function to load and display the profile picture and bio from localStorage
+            function loadProfileInfo() {
+                const storedProfilePic = localStorage.getItem('profile_pic');
+                if (storedProfilePic) {
+                    profilePicture.src = storedProfilePic;
+                }
+
+                const storedBio = localStorage.getItem('bio');
+                if (storedBio) {
+                    bioTextarea.value = storedBio;
+                }
             }
 
-            const storedBio = localStorage.getItem('bio');
-            if (storedBio) {
-                bioTextarea.value = storedBio;
-            }
-        }
+            // Update the text of the profile element.
+            const profileElement = document.getElementById("profileName");
+            profileElement.textContent = username;
 
-        const inputElement = document.getElementById('bio');
-        const characterCountElement = document.getElementById('characterCount');
+            const inputElement = document.getElementById('bio');
+            const characterCountElement = document.getElementById('characterCount');
 
-        inputElement.addEventListener('keyup', () => {
-            const textLength = inputElement.value.length;
-            const remainingCharacters = 190 - textLength;
-            characterCountElement.textContent = `${textLength}/${190}`;
-        });
+            inputElement.addEventListener('keyup', () => {
+                const textLength = inputElement.value.length;
+                const remainingCharacters = 190 - textLength;
+                characterCountElement.textContent = `${textLength}/${190}`;
+            });
 
-        // Load and display the profile information when the page loads
-        loadProfileInfo();
+            // Load and display the profile information when the page loads
+            loadProfileInfo();
 
-        document.getElementById('save-profile').addEventListener('click', () => {
-            if (sessionId && username) {
-                const newBio = bioTextarea.value;
-                const newProfilePic = profilePicture.src;
+            document.getElementById('save-profile').addEventListener('click', () => {
+                if (sessionId && username) {
+                    const newBio = bioTextarea.value;
+                    const newProfilePic = profilePicture.src;
 
-                // Send the profile information to the server, including sessionId and username
-                fetch('/save-profile', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        sessionId: sessionId,
-                        username: username,
-                        bio: newBio,
-                        profile_pic: newProfilePic,
-                    }),
-                })
-                    .then((response) => {
-                        if (response.status === 413) {
-                            // Payload too large error (HTTP status code 413)
-                            alert('Error: Payload is too large. Please try a smaller profile picture.');
-                        } else if (response.ok) {
-                            return response.json();
-                        } else {
-                            throw new Error('Failed to save profile');
-                        }
+                    // Send the profile information to the server, including sessionId and username
+                    fetch('/save-profile', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            sessionId: sessionId,
+                            username: username,
+                            bio: newBio,
+                            profile_pic: newProfilePic,
+                        }),
                     })
-                    .then((data) => {
-                        if (data.error) {
-                            alert('Failed to save profile: ' + data.error);
-                        } else {
-                            // Save the profile picture URL and bio in localStorage
-                            localStorage.setItem('profile_pic', newProfilePic);
-                            localStorage.setItem('bio', newBio);
-                            alert('Profile saved successfully');
-                        }
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                    });
+                        .then((response) => {
+                            if (response.status === 413) {
+                                // Payload too large error (HTTP status code 413)
+                                alert('Error: Payload is too large. Please try a smaller profile picture.');
+                            } else if (response.ok) {
+                                return response.json();
+                            } else {
+                                throw new Error('Failed to save profile');
+                            }
+                        })
+                        .then((data) => {
+                            if (data.error) {
+                                alert('Failed to save profile: ' + data.error);
+                            } else {
+                                // Save the profile picture URL and bio in localStorage
+                                localStorage.setItem('profile_pic', newProfilePic);
+                                localStorage.setItem('bio', newBio);
+                                alert('Profile saved successfully');
+                            }
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                        });
 
-            } else {
-                console.error('Session ID or username not found in local storage');
-            }
+                } else {
+                    console.error('Session ID or username not found in local storage');
+                }
+            });
+
+
+            profilePictureInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        profilePicture.src = e.target.result;
+                        // Save the new profile picture URL in localStorage
+                        localStorage.setItem('profile_pic', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
         });
 
-
-        profilePictureInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    profilePicture.src = e.target.result;
-                    // Save the new profile picture URL in localStorage
-                    localStorage.setItem('profile_pic', e.target.result);
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    });
-
-</script>
+    </script>
+    <script src="public.js"></script>
 </body>
 </html>
