@@ -67,61 +67,56 @@ con.connect(function (err){
     console.log("Connected polls db");
 })
 
-const sessions = []; // Define the sessions array to store user sessions
-
+const sessions = [];
+const uuid = require('uuid'); // Make sure to install this library
 
 app.post('/sessions', (req, res) => {
-    // Check if the request body contains both username and password
-    if (!req.body.username || !req.body.password) {
-        // If not, send an error response with status code 400
+    const { username, password } = req.body;
+
+    if (!username || !password) {
         return res.status(400).send({ error: "One or more parameters missing" });
-    } else {
-        // If both username and password are present, query the database to find a matching user
-        con.query('SELECT id, username, password, profile_pic, bio FROM polls.accounts WHERE username = ?', [req.body.username], function (error, results, fields) {
-            if (error) throw error;
-            // Check if the query returned any results
-            if (results.length > 0) {
-                // If so, compare the hashed password with the plain-text password entered by the user
-                const hashedPassword = results[0].password;
-                if (bcrypt.compareSync(req.body.password, hashedPassword)) {
-                    // If the passwords match, create a new session with a random session ID
-                    const sessionId = Math.round(Math.random() * 100000000);
-                    const session = { id: sessionId, user: req.body.username };
+    }
 
-                    // Fetch user's bio, profile_pic, and other data from the database
-                    const profile_pic = results[0].profile_pic;
-                    const url = decodeURIComponent(profile_pic);
-                    const imageData = url.substring(url.indexOf(',') + 1);
-                    const bio = results[0].bio;
-                    const user_id = results[0].id;
+    con.query('SELECT id, username, password, profile_pic, bio FROM polls.accounts WHERE username = ?', [username], (error, results) => {
+        if (error) {
+            console.error('Error in login query:', error);
+            return res.status(500).send({ error: "Internal Server Error" });
+        }
 
+        if (results.length > 0) {
+            const user = results[0];
+            const hashedPassword = user.password;
 
+            if (bcrypt.compareSync(password, hashedPassword)) {
+                const sessionId = uuid.v4(); // Generate a unique session ID
 
-                    // Store the session ID, bio, and profile_pic in local storage
-                    sessions.push(session);
-                    const sessionData = {
-                        id: sessionId,
-                        user: req.body.username,
-                        bio: bio,
-                        profile_pic: 'data:image/jpeg;base64,' + imageData
-                    };
+                const session = { id: sessionId, user: username };
+                sessions.push(session);
 
-                    // Send a success response with status code 201, indicating that the user is logged in, along with the session data
-                    return res.status(201).send({
-                        success: true,
-                        loggedIn: true,
-                        sessionData: sessionData
-                    });
-                } else {
-                    // If the passwords do not match, send an error response with status code 401, indicating that the login credentials are invalid
-                    return res.status(401).send({ error: "Invalid username or password" });
-                }
+                const profile_pic = user.profile_pic;
+                const url = decodeURIComponent(profile_pic);
+                const imageData = url.substring(url.indexOf(',') + 1);
+                const bio = user.bio;
+
+                const sessionData = {
+                    id: sessionId,
+                    user: username,
+                    bio: bio,
+                    profile_pic: 'data:image/jpeg;base64,' + imageData
+                };
+
+                return res.status(201).send({
+                    success: true,
+                    loggedIn: true,
+                    sessionData: sessionData
+                });
             } else {
-                // If the query did not return any results, send an error response with status code 401, indicating that the login credentials are invalid
                 return res.status(401).send({ error: "Invalid username or password" });
             }
-        });
-    }
+        } else {
+            return res.status(401).send({ error: "Invalid username or password" });
+        }
+    });
 });
 
 
@@ -416,7 +411,110 @@ app.post('/save-profile', (req, res) => {
 });
 
 
+// Endpoint to create a new chat
+app.post('/createChat', (req, res) => {
+    const { username, sessionId, chatName } = req.body;
 
+    // Verify the session ID and username
+    const validSession = sessions.find(session => session.id == sessionId && session.user === username);
+
+    if (!validSession) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    // Now, you can use the user information from the session
+    const owner = validSession.user;
+
+    // Get the user ID based on the owner (username)
+    const getUserIdQuery = 'SELECT id FROM polls.accounts WHERE username = ?';
+    con.query(getUserIdQuery, [owner], (err, userResult) => {
+        if (err) {
+            console.error('Error getting user ID:', err);
+            return res.status(500).json({ success: false, error: 'Internal Server Error' });
+        }
+
+        // Check if the user was found
+        if (userResult.length === 0) {
+            return res.status(500).json({ success: false, error: 'User not found' });
+        }
+
+        // Retrieve the user ID
+        const userId = userResult[0].id;
+
+        // Check if chatName is provided
+        if (!chatName) {
+            return res.status(400).json({ success: false, error: 'Chat name is required' });
+        }
+
+        // Insert a new chat into the 'chats' table
+        const createChatQuery = 'INSERT INTO chats (chat_name, owner_id) VALUES (?, ?)';
+        con.query(createChatQuery, [chatName, userId], (err, result) => {
+            if (err) {
+                console.error('Error creating chat:', err);
+                return res.status(500).json({ success: false, error: 'Internal Server Error' });
+            }
+
+            // Get the chat_id of the newly created chat
+            const chatId = result.insertId;
+
+            // Insert the user who created the chat as a member of the chat
+            const addOwnerToChatQuery = 'INSERT INTO chat_members (userId, chat_id) VALUES (?, ?)';
+            con.query(addOwnerToChatQuery, [userId, chatId], (err, result) => {
+                if (err) {
+                    console.error('Error adding owner to chat:', err);
+                    return res.status(500).json({ success: false, error: 'Internal Server Error' });
+                }
+
+                return res.json({ success: true, chatId });
+            });
+        });
+    });
+});
+
+
+app.get('/fetchChats', (req, res) => {
+    const { username, sessionId } = req.query;
+
+    // Verify the session ID and username
+    const validSession = sessions.find(session => session.id == sessionId && session.user === username);
+
+    if (!validSession) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    // Now, you can use the user information from the session
+    const owner = validSession.user;
+
+    // Get the user ID based on the owner (username)
+    const getUserIdQuery = 'SELECT id FROM polls.accounts WHERE username = ?';
+    con.query(getUserIdQuery, [owner], (err, userResult) => {
+        if (err) {
+            console.error('Error getting user ID:', err);
+            return res.status(500).json({ success: false, error: 'Internal Server Error' });
+        }
+
+        // Check if the user was found
+        if (userResult.length === 0) {
+            return res.status(500).json({ success: false, error: 'User not found' });
+        }
+
+        // Retrieve the user ID
+        const userId = userResult[0].id;
+
+        // Fetch the user's chat data
+        const fetchChatsQuery = 'SELECT chat_name FROM chats WHERE owner_id = ?';
+        con.query(fetchChatsQuery, [userId], (err, chatsResult) => {
+            if (err) {
+                console.error('Error fetching user chats:', err);
+                return res.status(500).json({ success: false, error: 'Internal Server Error' });
+            }
+
+            // Send the chat data to the frontend
+            const userChats = chatsResult.map(chat => ({ chatName: chat.chat_name }));
+            return res.json(userChats);
+        });
+    });
+});
 
 
 // General error handler

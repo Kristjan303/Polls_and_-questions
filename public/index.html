@@ -13,6 +13,7 @@
     <!-- Jquery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+
     <!-- Google fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +25,7 @@
 
     <title>Chatty Patty</title>
 </head>
-<body>
+<body style="background: #ffffff;">
 
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
@@ -33,27 +34,27 @@
     <div>
         <nav id="sidebar" style="width: 280px;">
             <ul>
-                <li class="main-btn">
-                    <a href="#" class="logo d-flex align-items-center">
+                <li id="mainBtn" class="main-btn" style="border-bottom: 2px solid transparent; border-image: linear-gradient(to left, white, #D8E0E8, #D8E0E8, #D8E0E8, white); border-image-slice: 1;" >
+                    <a href="#" class="logo d-flex align-items-center" >
                         <div class="toggle burger" onclick="toggleSidebar()">☰</div>
-                        <span class="side-nav-items">Chatty Patty</span>
+                        <span id="logo" class="side-nav-items">Chatty Patty</span>
                     </a>
                 </li>
                 <li>
                     <a href="/profile" class="d-flex align-items-center item" id="profileLink">
-                        <img id="pfp" src="" alt="" style="width: 50px; height: 50px; border-radius: 10px; background-color: #ccc; border: #D8E0E8 1px solid;">
+                        <img id="pfp" src="" alt="" style="width: 40px; height: 40px; border-radius: 10px; background-color: #ccc; border: #D8E0E8 1px solid;">
                         <span class="side-nav-item" id="profileName">Profile</span>
                     </a>
                 </li>
                 <li>
                     <a href="/friends" id="friendsLink" class="d-flex align-items-center item">
-                        <i class="fa-solid fa-users"></i>
+                        <i class="fa-solid fa-user-group fa-xl"></i>
                         <span class="side-nav-item">Friends</span>
                     </a>
                 </li>
                 <li>
                     <a href="#" class="d-flex align-items-center item">
-                        <i class="fa-solid fa-sliders"></i>
+                        <i class="fa-solid fa-sliders fa-xl"></i>
                         <span class="side-nav-item">Settings</span>
                     </a>
                 </li>
@@ -90,20 +91,56 @@
     </div>
 
     <div id="overlay" class="overlay"></div>
-    <div class="content" id="content">
-        <div id="modalLinksContainer">
-            <!-- <button onclick="openChatModal()">Open Chat Room</button> -->
+
+
+    <!-- Hold existing chats -->
+    <div class="chats-container" id="chatsContainer">
+        <div class="content" id="content">
+
+            <div class="owned-chats">
+                <div class="sticky-header">
+                    <span class="content-header">Your chat rooms</span>
+                </div>
+                <div class="scrollableContainer">
+                    <div id="modalLinksContainer">
+                        <!-- <button onclick="openChatModal()">Open Chat Room</button> -->
+                    </div>
+                </div>
+            </div>
+            <div class="joined-chats">
+                <div class="sticky-header">
+                    <span class="content-header2">Joined chat rooms</span>
+                </div>
+                <div class="scrollableContainer">
+                    <div id="joinedModalLinksContainer">
+                        <!-- <button onclick="openChatModal()">Open Chat Room</button> -->
+                    </div>
+                </div>
+            </div>
+            <div class="starred-chats">
+                <div class="sticky-header">
+                    <span class="content-header3">Starred chat rooms</span>
+                </div>
+                <div class="scrollableContainer">
+                    <div id="starredModalLinksContainer">
+                        <!-- <button onclick="openChatModal()">Open Chat Room</button> -->
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
+
     <div>
-        <nav id="mainbar" style="left: 280px;">
+        <nav id="mainbar" style="left: 280px;" class="contact-element">
             <ul>
-                <li class="createChat"><a type="button" data-bs-toggle="modal" href="#" class="d-flex align-items-center item"
+                <li class="createChat">
+                    <a type="button" data-bs-toggle="modal" href="#" class="d-flex align-items-center item"
                                           data-bs-target="#createChatModal" id="createChat">
-                    <i class="fa-solid fa-plus"></i>
-                    <span class="main-nav-item">Create</span>
-                </a></li>
+                        <i class="fa-solid fa-plus"></i>
+                        <span class="main-nav-item">Create</span>
+                    </a>
+                </li>
                 <li id="input">
                     <form class="form">
                         <label for="search">
@@ -134,19 +171,39 @@
 
 
     <!-- Chatroom Modal -->
-    <div id="chatModal" class="chatModal">
-        <!-- Modal content -->
-        <div class="chatModal-content">
-            <span class="close" onclick="closeChatModal()">&times;</span>
-            <div class="chatModal-header">
-                <h2 class="chatRoomName" id="chatRoomName">Chat1</h2>
-            </div>
-            <div class="chatModal-body">
-                <!-- Chat content goes here -->
-                <p>Welcome to the chat room!</p>
+    <div class="modal fade " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="chatModal">
+        <div class="modal-dialog  modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close btn-close shadow-none" data-bs-dismiss="modal"
+                            aria-label="Close" onclick="clearInputs()"></button>
+                    <div class="myform bg-light">
+                        <h3 id="chatText"></h3>
+                            <div class="modal-sidebar-messages">
+                                <div class="modal-sidebar">
+                                    <div class="modal-sidebar-items">
+                                        <!-- Make popover for each i element when clicked -->
+                                        <i style="color: #0d6efd" class="fa-solid fa-users fa-xl"></i>
+                                        <i style="color: #0d6efd" class="fa-solid fa-pencil fa-xl"></i>
+                                        <i style="color: red" class="fa-solid fa-trash fa-xl"></i>
+                                    </div>
+                                </div>
+                                <div class="messages" id="messages"></div>
+                            </div>
+                        <div class="input-container">
+                            <div> <!-- DO NOT REMOVE THIS EMPTY DIV --></div>
+                            <div class="send-message">
+                                <input type="text" class="form-control" id="messageInput" placeholder="Type something to share...">
+                                <button class="" id="sendButton" onclick="sendMessage()"><i style="left: -5px" class="fa-solid fa-paper-plane fa-lg"></i></button>
+                            <!-- Add other modal content here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
 
     <!-- Sign in Modal -->
     <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true"
@@ -208,10 +265,10 @@
                                 <!-- The chatroom name input field -->
                                 <div class="mb-3 mt-4">
                                     <label class="form-label">Chatroom name</label>
-                                    <input type="" class="form-control" id="modalNameInput">
+                                    <input type="" class="form-control" id="modalNameInput" maxlength="45">
                                 </div>
                                 <!-- Create chat button -->
-                                <button @click="" type="submit" class="btn btn-light mt-3" onclick="createModal()">
+                                <button @click="" type="submit" class="btn btn-light mt-3" onclick="createModal(), clearInputs()">
                                     Create
                                 </button>
                                 <hr>
@@ -222,7 +279,7 @@
                                 <!-- The chatroom name input field -->
                                 <div class="mb-3 mt-4">
                                     <label class="form-label">Join code</label>
-                                    <input type="" class="form-control" v-model="">
+                                    <input type="" class="form-control">
                                 </div>
                                 <!-- Create chat button -->
                                 <button @click="" type="submit" class="btn btn-light mt-3" onclick="clearInputs()">
@@ -418,9 +475,6 @@
 
 </script>
 
-
-</script>
-
 <script>
     const forms = document.querySelectorAll('form');
 
@@ -449,12 +503,16 @@
         var sidebar = document.getElementById("sidebar");
         var mainbar = document.getElementById("mainbar");
         var content = document.getElementById("content");
+        var container = document.getElementById("chatsContainer");
+        var logo = document.getElementById("logo");
         var buttons = document.querySelectorAll(".signin button, .createNewAcc button, .logout button");
 
         if (sidebar.style.width === "280px") {
             sidebar.style.width = "80px";
             mainbar.style.left = "80px";
             content.style.left = "80px";
+            container.style.left = "80px";
+            logo.style.display = "none";
             buttons.forEach(function (button) {
                 button.style.width = "50px";
                 button.querySelector('.button-text').style.display = 'none';
@@ -466,39 +524,16 @@
             sidebar.style.width = "280px";
             mainbar.style.left = "280px";
             content.style.left = "280px";
+            container.style.left = "280px";
+            logo.style.display = "";
             buttons.forEach(function (button) {
                 button.style.width = "";
                 setTimeout(function () {
                     button.querySelector('.button-text').style.display = '';
-                }, 100); // 200 milliseconds delay
+                }, 150); // 200 milliseconds delay
             });
         }
     }
-
-
-    // Get the modal
-    var overlay = document.getElementById('overlay');
-    var modal = document.getElementById('chatModal');
-
-    // Function to open the modal
-    function openChatModal() {
-        modal.style.display = 'block';
-        overlay.style.display = 'block';
-    }
-
-    // Function to close the modal
-    function closeChatModal() {
-        modal.style.display = 'none';
-        overlay.style.display = 'none';
-    }
-
-    // Close the modal if the user clicks outside of it or on the overlay
-    window.onclick = function (event) {
-        if (event.target === modal || event.target === overlay) {
-            closeChatModal();
-        }
-    };
-
 
 
     // Set up an event listener for storage events
@@ -526,10 +561,172 @@
         location.reload();
     });
 </script>
+
+<script>
+    // all chat related logic
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fetch and display user chats upon page load
+        const sessionData = {
+            user: localStorage.getItem('username'),
+            id: localStorage.getItem('sessionId')
+        };
+
+        if (sessionData && sessionData.user && sessionData.id) {
+            const { user: username, id: sessionId } = sessionData;
+            fetchUserChats(username, sessionId);
+        } else {
+            // Clear the chat names when logged out
+            clearChatNames();
+        }
+    });
+
+    function createModal() {
+        const chatName = document.getElementById('modalNameInput').value;
+
+        // Replace 'YOUR_BACKEND_ENDPOINT' with the actual URL of your backend endpoint
+        const backendEndpoint = '/createChat';
+
+        // Fetch the session data from local storage
+        const sessionData = {
+            user: localStorage.getItem('username'),
+            id: localStorage.getItem('sessionId')
+        };
+
+        // Check if sessionData is present
+        if (sessionData && sessionData.user && sessionData.id) {
+            const { user: username, id: sessionId } = sessionData;
+
+            // Prepare data to send to the backend
+            const data = {
+                username,
+                sessionId,
+                chatName,
+            };
+
+            // Make a POST request to the backend endpoint
+            fetch(backendEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        // Chat created successfully
+                        alert(`Chatroom "${chatName}" created!`);
+
+                        // After creating the chat, fetch and display the user's chat names
+                        fetchUserChats(username, sessionId);
+                    } else {
+                        // Handle error from the backend
+                        alert(`Error creating chat: ${result.error}`);
+                    }
+                })
+                .catch(error => {
+                    // Handle fetch error
+                    console.error('Error creating chat:', error);
+                    alert('Error creating chat. Please try again.');
+                });
+        } else {
+            // Handle missing sessionData
+            alert('User not logged in. Please log in and try again.');
+            console.log(sessionData);
+
+            // Clear the chat names when logged out
+            clearChatNames();
+        }
+    }
+
+    function fetchUserChats(username, sessionId) {
+        // Replace 'YOUR_BACKEND_ENDPOINT' with the actual URL of your backend endpoint for fetching user chats
+        const fetchChatsEndpoint = `/fetchChats?username=${username}&sessionId=${sessionId}`;
+
+        // Make a GET request to fetch user chats
+        fetch(fetchChatsEndpoint)
+            .then(response => response.json())
+            .then(chats => {
+                displayChatNames(chats);
+            })
+            .catch(error => {
+                // Handle fetch error
+                console.error('Error fetching user chats:', error);
+            });
+    }
+
+    function displayChatNames(chats) {
+        const modalLinksContainer = document.getElementById('modalLinksContainer');
+        modalLinksContainer.innerHTML = ''; // Clear existing content
+
+        chats.forEach(chat => {
+            // Create a div for each chat
+            const chatDiv = document.createElement('div');
+            chatDiv.style.cursor = 'pointer';
+
+            // Create an h2 element for the chatName
+            const chatNameHeading = document.createElement('h5');
+            chatNameHeading.textContent = chat.chatName;
+            chatNameHeading.style.textAlign = 'center';
+            chatNameHeading.style.marginTop = '10px';
+            chatNameHeading.style.marginRight = '5px';
+            chatNameHeading.style.marginLeft = '5px';
+
+            // Append the h2 element to the chatDiv
+            chatDiv.appendChild(chatNameHeading);
+
+            // Assign the id "chatDiv" to each created div
+            chatDiv.id = 'chatDiv';
+            // Append the div to the container
+            modalLinksContainer.appendChild(chatDiv);
+
+            // Add click event listener to each chatDiv
+            chatDiv.addEventListener('click', function() {
+                // Open the modal
+                openModal(chat.chatName);
+            });
+        });
+    }
+
+    // Function to open the modal and display the name of the clicked chatDiv
+    function openModal(chatName) {
+        // Get the modal element
+        const modal = new bootstrap.Modal(document.getElementById('chatModal'));
+
+        // Set the chat name in the modal content
+        const chatText = document.getElementById('chatText');
+        chatText.textContent = chatName;
+
+        // Open the modal using Bootstrap's modal method
+        modal.show();
+    }
+
+    // Function to clear input when the modal is closed
+    function clearInputs() {
+        const chatText = document.getElementById('chatText');
+        chatText.value = '';
+
+        // Additional cleanup if needed
+    }
+
+
+    function clearChatNames() {
+        const modalLinksContainer = document.getElementById('modalLinksContainer');
+        modalLinksContainer.innerHTML = ''; // Clear existing content
+    }
+
+
+
+
+</script>
 <script src="checkLogin.js"></script>
 <!-- Optional JavaScript; choose one of the two! -->
 
 <!-- Option 1: Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>

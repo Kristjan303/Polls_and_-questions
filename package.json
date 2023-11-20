@@ -36,6 +36,7 @@
     "sharp": "^0.32.6",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^4.6.3",
+    "uuid": "^9.0.1",
     "yamljs": "^0.3.0"
   }
 }
